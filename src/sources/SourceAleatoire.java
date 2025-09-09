@@ -21,8 +21,4 @@ public class SourceAleatoire extends Source {
     
         return sb.toString();
     }
-    public static void main(String args[]) {
-        String info = generateRandom(8);
-        System.out.println("The generated information is: " + info);
-    }
 }

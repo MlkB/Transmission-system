@@ -119,7 +119,6 @@ public class Simulateur {
     				throw new ArgumentsException("Valeur du parametre -mess invalide : " + args[i]);
     		}
     		
-    		//TODO : ajouter ci-après le traitement des nouvelles options
 
     		else throw new ArgumentsException("Option invalide :"+ args[i]);
     	}
