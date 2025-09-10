@@ -1,7 +1,11 @@
 package simulateur;
 import destinations.Destination;
+import destinations.DestinationFinale;
 import sources.Source;
+import sources.SourceAleatoire;
+import sources.SourceFixe;
 import transmetteurs.Transmetteur;
+import transmetteurs.transmetteurParfait;
 
 
 /** La classe Simulateur permet de construire et simuler une chaîne de
@@ -122,11 +126,27 @@ public class Simulateur {
 
     		else throw new ArgumentsException("Option invalide :"+ args[i]);
     	}
-      
+        
+
+        if (messageAleatoire) {
+            if (aleatoireAvecGerme) {
+                source = new SourceAleatoire(); 
+            } else {
+                source = new SourceAleatoire();
+            }
+        } else {
+        // Construire le tableau de Booleans à partir de messageString
+            Boolean[] bits = new Boolean[nbBitsMess];
+            for (int i = 0; i < nbBitsMess; i++) {
+                bits[i] = (messageString.charAt(i) == '1');
+            }
+          source = new SourceFixe();
     }
+
      
+
+    }
     
-   	
     /** La méthode execute effectue un envoi de message par la source
      * de la chaîne de transmission du Simulateur.
      *
@@ -134,9 +154,9 @@ public class Simulateur {
      *
      */ 
     public void execute() throws Exception {      
-         
-    	// TODO : typiquement source.emettre(); 
-      	     	      
+         source.emettre();
+        // TODO : typiquement source.emettre(); 
+                      
     }
    
    	   	

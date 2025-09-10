@@ -9,43 +9,35 @@ import sources.Source;
 import sources.SourceAleatoire;
 
 @SuppressWarnings("unchecked")
-public class transmetteurParfait<E> extends Transmetteur{
+public class transmetteurParfait<T> extends Transmetteur <T,T> {
     
     public <E> transmetteurParfait (){
         super();
     }
-    @Override
+@Override
     public void recevoir(Information information) throws InformationNonConformeException {
-       
-        throw new UnsupportedOperationException("Unimplemented method 'recevoir'") ;
-    }
-    
-    {
-        this.informationRecue = this.informationEmise;
-        String info = SourceAleatoire.generateRandom(8);
-        info =  this.informationEmise.toString();
-        System.out.println("The generated information is: " + info);
-
+        this.informationRecue = information;
+        this.informationEmise = this.informationRecue;
+        try {
+            emettre();
+        } catch (InformationNonConformeException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void emettre() throws InformationNonConformeException {
-        
-        throw new UnsupportedOperationException("Unimplemented method 'emettre'");
-    }
-     {
-      try{
-        for (Object obj : destinationsConnectees) {
-            @SuppressWarnings("unchecked")
-            DestinationInterface<E> destinationConnectee = (DestinationInterface<E>) obj;
-            destinationConnectee.recevoir(this.informationRecue);
+        for (DestinationInterface<T> dest : destinationsConnectees) {
+            try {
+                dest.recevoir(informationEmise);
+            } catch (InformationNonConformeException e) {
+                e.printStackTrace();
+            }
         }
-        this.informationEmise = informationRecue;   
-       } catch (InformationNonConformeException e) {
-              e.printStackTrace();
-
-     }
-    
-}
+    }
+        public static void main(String[] args) {
+            String info = SourceAleatoire.generateRandom(8);
+            System.out.println("The generated information is: " + info);
+        }
 
 }
