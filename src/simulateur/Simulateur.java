@@ -1,6 +1,7 @@
 package simulateur;
 import destinations.Destination;
 import destinations.DestinationFinale;
+import information.InformationNonConformeException;
 import sources.Source;
 import sources.SourceAleatoire;
 import sources.SourceFixe;
@@ -37,7 +38,7 @@ public class Simulateur {
    
    	
     /** le  composant Source de la chaine de transmission */
-    private Source <Boolean>  source = null;
+    private static Source <Boolean>  source = null;
     
     /** le  composant Transmetteur parfait logique de la chaine de transmission */
     private Transmetteur <Boolean, Boolean>  transmetteurLogique = null;
@@ -61,7 +62,35 @@ public class Simulateur {
     	// analyser et récupérer les arguments   	
     	analyseArguments(args);
       
-      	// TODO : Partie à compléter
+         try {
+            if (messageAleatoire) {
+                if (aleatoireAvecGerme) {
+                    source = new SourceAleatoire();
+                } else {
+                    source = new SourceAleatoire();
+                }
+            } else {
+            // Construire le tableau de Booleans à partir de messageString
+                Boolean[] bits = new Boolean[nbBitsMess];
+                for (int i = 0; i < nbBitsMess; i++) {
+                    bits[i] = (messageString.charAt(i) == '1');
+                }
+                source = new SourceFixe();
+            }
+        } catch (Exception e) {
+        
+            e.printStackTrace();
+        }
+
+            // Transmetteur parfait
+        transmetteurLogique = new transmetteurParfait<>();
+
+        // Destination finale
+        destination = new DestinationFinale();
+
+        // Connexions
+        source.connecter(transmetteurLogique);
+        transmetteurLogique.connecter(destination);
       		
     }
    
@@ -127,25 +156,10 @@ public class Simulateur {
     		else throw new ArgumentsException("Option invalide :"+ args[i]);
     	}
         
-
-        if (messageAleatoire) {
-            if (aleatoireAvecGerme) {
-                source = new SourceAleatoire(); 
-            } else {
-                source = new SourceAleatoire();
-            }
-        } else {
-        // Construire le tableau de Booleans à partir de messageString
-            Boolean[] bits = new Boolean[nbBitsMess];
-            for (int i = 0; i < nbBitsMess; i++) {
-                bits[i] = (messageString.charAt(i) == '1');
-            }
-          source = new SourceFixe();
     }
 
-     
-
-    }
+    // Initialisation de la source après analyse des arguments
+    
     
     /** La méthode execute effectue un envoi de message par la source
      * de la chaîne de transmission du Simulateur.
@@ -155,8 +169,8 @@ public class Simulateur {
      */ 
     public void execute() throws Exception {      
          source.emettre();
-        // TODO : typiquement source.emettre(); 
-                      
+         
+        
     }
    
    	   	
@@ -167,12 +181,18 @@ public class Simulateur {
      * @return  La valeur du Taux dErreur Binaire.
      */   	   
     public float  calculTauxErreurBinaire() {
-
-    	// TODO : A compléter
-
-    	return  0.0f;
+           int erreurs = 0;
+           int taille = source.getInformationEmise().nbElements();
+            for (int i = 0; i < taille; i++) {
+                Boolean bitEmis = source.getInformationEmise().iemeElement(i);
+                Boolean bitRecu = destination.getInformationRecue().iemeElement(i);
+                if (!bitEmis.equals(bitRecu)) {
+                    erreurs++;
+                }
+            }
+    	return (float) erreurs / (float) taille;
+    
     }
-   
    
    
    
@@ -180,8 +200,10 @@ public class Simulateur {
      *  arguments paramètres et affiche le résultat de l'exécution
      *  d'une transmission.
      *  @param args les différents arguments qui serviront à l'instanciation du Simulateur.
+     * @throws InformationNonConformeException 
      */
-    public static void main(String [] args) { 
+    public static void main(String [] args) throws InformationNonConformeException { 
+
 
     	Simulateur simulateur = null;
 
