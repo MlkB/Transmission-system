@@ -3,6 +3,10 @@ package sources;
 import information.Information;
 
 public class SourceFixe extends Source {
+
+	public SourceFixe() {
+		super();
+	}
 	
 	public void genererInformation(String message) {
 		Information<Boolean> informationBinaire = new Information<Boolean>();
@@ -25,3 +29,5 @@ public class SourceFixe extends Source {
 	}
 	
 }
+
+

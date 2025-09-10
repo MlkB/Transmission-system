@@ -1,7 +1,11 @@
 package simulateur;
 import destinations.Destination;
 import sources.Source;
+import sources.SourceAleatoire;
+import sources.SourceFixe;
 import transmetteurs.Transmetteur;
+import transmetteurs.TransmetteurParfait;
+import destinations.DestinationFinale;
 
 
 /** La classe Simulateur permet de construire et simuler une chaîne de
@@ -92,7 +96,6 @@ public class Simulateur {
     		else if (args[i].matches("-seed")) {
     			aleatoireAvecGerme = true;
     			i++; 
-    			// traiter la valeur associee
     			try { 
     				seed = Integer.valueOf(args[i]);
     			}
@@ -135,8 +138,20 @@ public class Simulateur {
      *
      */ 
     public void execute() throws Exception {      
-         
-    	// TODO : typiquement source.emettre(); 
+    	SourceFixe SF1 = new SourceFixe();
+    	SourceAleatoire SA1 = new SourceAleatoire();
+    	TransmetteurParfait T1 = new TransmetteurParfait();
+    	DestinationFinale D1 = new DestinationFinale();
+    	
+    	SF1.connecter(T1);
+    	T1.connecter(D1);
+    	
+    	SF1.genererInformation("1010100101");
+    	SF1.emettre();
+    	
+    	T1.emettre();
+    	
+    	System.out.println(D1.getInformationRecue());;
       	     	      
     }
    
@@ -149,7 +164,6 @@ public class Simulateur {
      */   	   
     public float  calculTauxErreurBinaire() {
 
-    	// TODO : A compléter
 
     	return  0.0f;
     }

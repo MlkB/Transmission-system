@@ -4,7 +4,7 @@
 /**
  * 
  */
-module projetTransmissions {
+module Transmission-system{
 	    requires java.desktop;
 }
 
