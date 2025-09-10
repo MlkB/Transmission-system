@@ -3,10 +3,6 @@ package sources;
 import information.Information;
 
 public class SourceFixe extends Source {
-
-	public SourceFixe() {
-		super();
-	}
 	
 	public void genererInformation(String message) {
 		Information<Boolean> informationBinaire = new Information<Boolean>();
@@ -24,7 +20,7 @@ public class SourceFixe extends Source {
 	
 	public static void main(String[] args) {
 		SourceFixe S1 = new SourceFixe();
-		S1.genererInformation("ojfozj");
+		S1.genererInformation("111");
 		System.out.println(S1.informationGeneree);
 	}
 	
