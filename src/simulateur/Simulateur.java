@@ -6,6 +6,9 @@ import sources.SourceFixe;
 import transmetteurs.Transmetteur;
 import transmetteurs.TransmetteurParfait;
 import destinations.DestinationFinale;
+import information.Information;
+import information.InformationNonConformeException;
+import visualisations.SondeLogique;
 
 
 /** La classe Simulateur permet de construire et simuler une chaîne de
@@ -55,13 +58,38 @@ public class Simulateur {
      * @param args le tableau des différents arguments.
      *
      * @throws ArgumentsException si un des arguments est incorrect
+     * @throws InformationNonConformeException 
      *
      */   
-    public  Simulateur(String [] args) throws ArgumentsException {
+    public  Simulateur(String [] args) throws ArgumentsException, InformationNonConformeException {
     	// analyser et récupérer les arguments   	
     	analyseArguments(args);
       
-      	// TODO : Partie à compléter
+    	
+    	// 1. Create the correct source based on the arguments
+        if (messageAleatoire) {
+            // Random message
+            SourceAleatoire SA = new SourceAleatoire();
+            if (aleatoireAvecGerme && seed != null) {
+                SA.setSeed(seed);  // assuming you add a setSeed method
+            }
+            SA.setLength(nbBitsMess);  // assuming you add a setNbBits method
+            SA.generer(); 
+            source = SA;
+        } else {
+            // Fixed message
+            SourceFixe SF = new SourceFixe();
+            SF.genererInformation(messageString);
+            source = SF;
+        }
+    	
+
+        transmetteurLogique = new TransmetteurParfait();
+        destination = new DestinationFinale();
+    	
+    	
+    	source.connecter(transmetteurLogique);
+    	transmetteurLogique.connecter(destination);
       		
     }
    
@@ -137,21 +165,13 @@ public class Simulateur {
      * @throws Exception si un problème survient lors de l'exécution
      *
      */ 
-    public void execute() throws Exception {      
-    	SourceFixe SF1 = new SourceFixe();
-    	SourceAleatoire SA1 = new SourceAleatoire();
-    	TransmetteurParfait T1 = new TransmetteurParfait();
-    	DestinationFinale D1 = new DestinationFinale();
+    public void execute() throws Exception {    
     	
-    	SF1.connecter(T1);
-    	T1.connecter(D1);
+    	source.emettre();
     	
-    	SF1.genererInformation("1010100101");
-    	SF1.emettre();
+    	transmetteurLogique.emettre();
     	
-    	T1.emettre();
-    	
-    	System.out.println(D1.getInformationRecue());;
+    	System.out.println(destination.getInformationRecue());;
       	     	      
     }
    
@@ -163,9 +183,15 @@ public class Simulateur {
      * @return  La valeur du Taux dErreur Binaire.
      */   	   
     public float  calculTauxErreurBinaire() {
-
-
-    	return  0.0f;
+    	Information<Boolean> infoEmise = source.getInformationEmise();
+    	Information<Boolean> infoRecue = destination.getInformationRecue();
+    	
+    	int error = 0;
+    	for (int i = 0; i<nbBitsMess; i++) {
+    		if (infoEmise.iemeElement(i) != infoRecue.iemeElement(i)) error++;
+    	}
+    	int taux = (error)/nbBitsMess;
+    	return  taux;
     }
    
    
