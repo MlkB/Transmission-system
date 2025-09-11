@@ -1,12 +1,14 @@
 package simulateur;
 import destinations.Destination;
-import destinations.DestinationFinale;
-import information.InformationNonConformeException;
 import sources.Source;
 import sources.SourceAleatoire;
 import sources.SourceFixe;
 import transmetteurs.Transmetteur;
-import transmetteurs.transmetteurParfait;
+import transmetteurs.TransmetteurParfait;
+import destinations.DestinationFinale;
+import information.Information;
+import information.InformationNonConformeException;
+import visualisations.SondeLogique;
 
 
 /** La classe Simulateur permet de construire et simuler une chaîne de
@@ -38,7 +40,7 @@ public class Simulateur {
    
    	
     /** le  composant Source de la chaine de transmission */
-    private static Source <Boolean>  source = null;
+    private Source <Boolean>  source = null;
     
     /** le  composant Transmetteur parfait logique de la chaine de transmission */
     private Transmetteur <Boolean, Boolean>  transmetteurLogique = null;
@@ -48,49 +50,46 @@ public class Simulateur {
    	
    
     /** Le constructeur de Simulateur construit une chaîne de
-     * transmission composée d'une Source <Boolean>, d'une Destination
-     * <Boolean> et de Transmetteur(s) [voir la méthode
+     * transmission composée d'une Source {@code <Boolean>}, d'une Destination
+     * {@code <Boolean>}et de Transmetteur(s) [voir la méthode
      * analyseArguments]...  <br> Les différents composants de la
      * chaîne de transmission (Source, Transmetteur(s), Destination,
      * Sonde(s) de visualisation) sont créés et connectés.
      * @param args le tableau des différents arguments.
      *
      * @throws ArgumentsException si un des arguments est incorrect
+     * @throws InformationNonConformeException 
      *
      */   
-    public  Simulateur(String [] args) throws ArgumentsException {
+    public  Simulateur(String [] args) throws ArgumentsException, InformationNonConformeException {
     	// analyser et récupérer les arguments   	
     	analyseArguments(args);
       
-         try {
-            if (messageAleatoire) {
-                if (aleatoireAvecGerme) {
-                    source = new SourceAleatoire();
-                } else {
-                    source = new SourceAleatoire();
-                }
-            } else {
-            // Construire le tableau de Booleans à partir de messageString
-                Boolean[] bits = new Boolean[nbBitsMess];
-                for (int i = 0; i < nbBitsMess; i++) {
-                    bits[i] = (messageString.charAt(i) == '1');
-                }
-                source = new SourceFixe();
+    	
+    	// 1. Create the correct source based on the arguments
+        if (messageAleatoire) {
+            // Random message
+            SourceAleatoire SA = new SourceAleatoire();
+            if (aleatoireAvecGerme && seed != null) {
+                SA.setSeed(seed);  // assuming you add a setSeed method
             }
-        } catch (Exception e) {
-        
-            e.printStackTrace();
+            SA.setLength(nbBitsMess);  // assuming you add a setNbBits method
+            SA.generer(); 
+            source = SA;
+        } else {
+            // Fixed message
+            SourceFixe SF = new SourceFixe();
+            SF.generer(messageString);
+            source = SF;
         }
+    	
 
-            // Transmetteur parfait
-        transmetteurLogique = new transmetteurParfait<>();
-
-        // Destination finale
+        transmetteurLogique = new TransmetteurParfait();
         destination = new DestinationFinale();
-
-        // Connexions
-        source.connecter(transmetteurLogique);
-        transmetteurLogique.connecter(destination);
+    	
+    	
+    	source.connecter(transmetteurLogique);
+    	transmetteurLogique.connecter(destination);
       		
     }
    
@@ -125,7 +124,6 @@ public class Simulateur {
     		else if (args[i].matches("-seed")) {
     			aleatoireAvecGerme = true;
     			i++; 
-    			// traiter la valeur associee
     			try { 
     				seed = Integer.valueOf(args[i]);
     			}
@@ -152,25 +150,29 @@ public class Simulateur {
     				throw new ArgumentsException("Valeur du parametre -mess invalide : " + args[i]);
     		}
     		
+    		//TODO : ajouter ci-après le traitement des nouvelles options
 
     		else throw new ArgumentsException("Option invalide :"+ args[i]);
     	}
-        
+      
     }
-
-    // Initialisation de la source après analyse des arguments
+     
     
-    
+   	
     /** La méthode execute effectue un envoi de message par la source
      * de la chaîne de transmission du Simulateur.
      *
      * @throws Exception si un problème survient lors de l'exécution
      *
      */ 
-    public void execute() throws Exception {      
-         source.emettre();
-         
-        
+    public void execute() throws Exception {    
+    	
+    	source.emettre();
+    	
+    	transmetteurLogique.emettre();
+    	
+    	System.out.println(destination.getInformationRecue());;
+      	     	      
     }
    
    	   	
@@ -181,18 +183,17 @@ public class Simulateur {
      * @return  La valeur du Taux dErreur Binaire.
      */   	   
     public float  calculTauxErreurBinaire() {
-           int erreurs = 0;
-           int taille = source.getInformationEmise().nbElements();
-            for (int i = 0; i < taille; i++) {
-                Boolean bitEmis = source.getInformationEmise().iemeElement(i);
-                Boolean bitRecu = destination.getInformationRecue().iemeElement(i);
-                if (!bitEmis.equals(bitRecu)) {
-                    erreurs++;
-                }
-            }
-    	return (float) erreurs / (float) taille;
-    
+    	Information<Boolean> infoEmise = source.getInformationEmise();
+    	Information<Boolean> infoRecue = destination.getInformationRecue();
+    	
+    	int error = 0;
+    	for (int i = 0; i<nbBitsMess; i++) {
+    		if (infoEmise.iemeElement(i) != infoRecue.iemeElement(i)) error++;
+    	}
+    	int taux = (error)/nbBitsMess;
+    	return  taux;
     }
+   
    
    
    
@@ -200,10 +201,8 @@ public class Simulateur {
      *  arguments paramètres et affiche le résultat de l'exécution
      *  d'une transmission.
      *  @param args les différents arguments qui serviront à l'instanciation du Simulateur.
-     * @throws InformationNonConformeException 
      */
-    public static void main(String [] args) throws InformationNonConformeException { 
-
+    public static void main(String [] args) { 
 
     	Simulateur simulateur = null;
 

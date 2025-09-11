@@ -24,14 +24,14 @@ public class SondeLogique extends Sonde <Boolean> {
     }
     
     public void recevoir (Information <Boolean> information) { 
-        informationRecue = information;
-        int nbElements = information.nbElements();
-        boolean [] table = new boolean[nbElements];
-        int i = 0;
-        for (boolean b : information) {
-                table[i] = b;
-                i++;
-        }
-            new VueCourbe (table,  nbPixels, nom); 
+	informationRecue = information;
+	int nbElements = information.nbElements();
+	boolean [] table = new boolean[nbElements];
+	int i = 0;
+	for (boolean b : information) {
+            table[i] = b;
+            i++;
+	}
+      	new VueCourbe (table,  nbPixels, nom); 
     }
 }

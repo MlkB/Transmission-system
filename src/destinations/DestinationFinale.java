@@ -5,10 +5,12 @@ import information.InformationNonConformeException;
 
 public class DestinationFinale extends Destination {
 
-    @Override
-    public void recevoir(Information information) throws InformationNonConformeException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'recevoir'");
-    }
-    
+	@Override
+	public void recevoir(Information information) throws InformationNonConformeException {
+		this.informationRecue = information;
+	}
+	
+	public Information getInformation() {
+		return this.informationRecue;
+	}
 }
