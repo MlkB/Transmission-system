@@ -1,6 +1,3 @@
 #!/bin/bash/
 
-
-for file in $(find "./src/" -name "*.java"); do
-    javac -d "./bin/" "$file"
-done
+javac -d "./bin" src/*/*.java -Xlint:unchecked
