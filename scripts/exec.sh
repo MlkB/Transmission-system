@@ -1,9 +1,5 @@
 #!/bin/bash
-
-for file in ./bin/*.class; do
-    java -d "$file"
-    if [ $? -ne 0 ]; then
-        echo "execution failed for $file"
-        exit 1
-    fi
+SRC_DIR="./bin/"
+for file in $(find "$SRC_DIR" -name "*.class"); do
+    java "$file"
 done
