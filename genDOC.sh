@@ -1,3 +1,0 @@
-#!/bin/bash 
-
-javadoc -d ./docs/ ./src/*/*.java

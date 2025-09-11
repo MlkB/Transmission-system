@@ -1,3 +1,2 @@
 #!/bin/bash
-pwd
 javac -d bin src/*/*.java -Xlint:unchecked
