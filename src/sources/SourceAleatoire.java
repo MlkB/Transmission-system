@@ -2,7 +2,7 @@ package sources;
 
 import java.util.Random;
 import information.Information;
-import information.InformationNonConformeException;
+import information.InformationNonConformeException; 
 
 public class SourceAleatoire extends Source {
 	
