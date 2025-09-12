@@ -1,0 +1,6 @@
+#!/bin/bash
+rm -rf bin/*
+cd src
+rm $(find . -name "*.class")
+cd ..
+rm -rf docs/* 
