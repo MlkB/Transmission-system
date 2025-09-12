@@ -1,24 +1,2 @@
 #!/bin/bash
-
-# Prompt the user for -mess
-read -p "Enter -mess value (leave empty if none): " mess
-
-# Prompt the user for -seed
-read -p "Enter -seed value (leave empty if none): " seed
-
-# Build the command dynamically
-cmd="java -cp bin simulateur.Simulateur"
-
-# Add -mess if provided
-if [[ -n "$mess" ]]; then
-    cmd="$cmd -mess $mess"
-fi
-
-# Add -seed if provided
-if [[ -n "$seed" ]]; then
-    cmd="$cmd -seed $seed"
-fi
-
-# Run the command
-echo "Running: $cmd"
-$cmd
+java -cp ./bin simulateur.Simulateur "$@"

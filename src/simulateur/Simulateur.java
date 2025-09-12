@@ -50,8 +50,8 @@ public class Simulateur {
    	
    
     /** Le constructeur de Simulateur construit une chaîne de
-     * transmission composée d'une Source <Boolean>, d'une Destination
-     * <Boolean> et de Transmetteur(s) [voir la méthode
+     * transmission composée d'une Source {@code <Boolean>}, d'une Destination
+     * {@code <Boolean>}et de Transmetteur(s) [voir la méthode
      * analyseArguments]...  <br> Les différents composants de la
      * chaîne de transmission (Source, Transmetteur(s), Destination,
      * Sonde(s) de visualisation) sont créés et connectés.
@@ -79,7 +79,7 @@ public class Simulateur {
         } else {
             // Fixed message
             SourceFixe SF = new SourceFixe();
-            SF.genererInformation(messageString);
+            SF.generer(messageString);
             source = SF;
         }
     	

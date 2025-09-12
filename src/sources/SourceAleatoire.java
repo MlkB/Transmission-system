@@ -2,7 +2,7 @@ package sources;
 
 import java.util.Random;
 import information.Information;
-import information.InformationNonConformeException;
+import information.InformationNonConformeException; 
 
 public class SourceAleatoire extends Source {
 	
@@ -49,9 +49,4 @@ public class SourceAleatoire extends Source {
 			}
 		}
 		
-		public static void main(String[] args) throws InformationNonConformeException {
-			SourceAleatoire S1 = new SourceAleatoire();
-			S1.generer();
-			System.out.println(S1.informationGeneree);
-		}
 }
