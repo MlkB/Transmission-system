@@ -3,8 +3,10 @@
 # arg1 = nom de l'archive (**sans le '.tar.gz' final**)
 PATH=${PATH}:.
 
+
 . ./Parametrage
 #
+
 if [ $# -lt 1 ] ; then echo "Vous devez expliciter le livrable à traiter" ; exit 1
 fi
 #

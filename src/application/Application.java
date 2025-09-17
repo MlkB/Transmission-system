@@ -1,6 +1,6 @@
 package application;
 
-import destinations.DestinationFinale;
+import destinations.*;
 import information.InformationNonConformeException;
 import sources.SourceFixe;
 import sources.SourceAleatoire;

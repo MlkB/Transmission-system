@@ -8,7 +8,9 @@ import transmetteurs.TransmetteurParfait;
 import destinations.DestinationFinale;
 import information.Information;
 import information.InformationNonConformeException;
-import visualisations.SondeLogique;
+
+import emmetteurs.Emetteur;
+
 
 
 /** La classe Simulateur permet de construire et simuler une chaîne de
@@ -47,6 +49,9 @@ public class Simulateur {
     
     /** le  composant Destination de la chaine de transmission */
     private Destination <Boolean>  destination = null;
+
+    private Emetteur emetteur = null;
+    
    	
    
     /** Le constructeur de Simulateur construit une chaîne de
@@ -85,10 +90,13 @@ public class Simulateur {
     	
 
         transmetteurLogique = new TransmetteurParfait();
+        emetteur = new Emetteur("NRZT");
         destination = new DestinationFinale();
+        
+
     	
-    	
-    	source.connecter(transmetteurLogique);
+    	source.connecter(emetteur);
+        emetteur.connecter(transmetteurLogique);
     	transmetteurLogique.connecter(destination);
       		
     }
@@ -150,7 +158,6 @@ public class Simulateur {
     				throw new ArgumentsException("Valeur du parametre -mess invalide : " + args[i]);
     		}
     		
-    		//TODO : ajouter ci-après le traitement des nouvelles options
 
     		else throw new ArgumentsException("Option invalide :"+ args[i]);
     	}
@@ -168,8 +175,8 @@ public class Simulateur {
     public void execute() throws Exception {    
     	
     	source.emettre();
-    	
-    	transmetteurLogique.emettre();
+        emetteur.recevoir(source.getInformationEmise());
+     	transmetteurLogique.emettre();
     	
     	System.out.println(destination.getInformationRecue());;
       	     	      
@@ -184,7 +191,7 @@ public class Simulateur {
      */   	   
     public float  calculTauxErreurBinaire() {
     	Information<Boolean> infoEmise = source.getInformationEmise();
-    	Information<Boolean> infoRecue = destination.getInformationRecue();
+    	Information<Boolean> infoRecue = emetteur.getInformationRecue();
     	
     	int error = 0;
     	for (int i = 0; i<nbBitsMess; i++) {
