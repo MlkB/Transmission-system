@@ -7,8 +7,15 @@ import sources.SourceAleatoire;
 import information.Information;
 import information.InformationNonConformeException;
 
+/**
+ * classe de test permettant de tester le fonctionnement de la source aléatoire
+ */
 public class SourceAleatoireTest {
 
+    /**
+     * teste que la longueur par défaut d'un message est 100
+     * @throws InformationNonConformeException
+     */
     @Test
     void testDefaultLength() throws InformationNonConformeException {
         SourceAleatoire source = new SourceAleatoire();
@@ -20,6 +27,10 @@ public class SourceAleatoireTest {
         assertEquals(100, info.nbElements()); 
     }
 
+    /**
+     * teste que la longueur est corectement définie par l'utilisateur
+     * @throws InformationNonConformeException
+     */
     @Test
     void testCustomLength() throws InformationNonConformeException {
         SourceAleatoire source = new SourceAleatoire();
@@ -32,6 +43,11 @@ public class SourceAleatoireTest {
         assertEquals(42, info.nbElements());
     }
 
+    /**
+     * teste que la génération avec une graine se fait correctement
+     * et est répétable
+     * @throws InformationNonConformeException
+     */
     @Test
     void testWithSeed() throws InformationNonConformeException {
         SourceAleatoire source1 = new SourceAleatoire();
@@ -49,6 +65,10 @@ public class SourceAleatoireTest {
         assertEquals(source1.getInformationEmise(), source2.getInformationEmise());
     }
 
+    /**
+     * teste que la source ne génère que des booléens
+     * @throws InformationNonConformeException
+     */
     @Test
     void testOnlyBooleansGenerated() throws InformationNonConformeException {
         SourceAleatoire source = new SourceAleatoire();

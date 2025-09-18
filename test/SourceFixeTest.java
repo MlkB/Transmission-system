@@ -8,8 +8,15 @@ import information.Information;
 
 import java.util.Arrays;
 
+/**
+ * classe de test permettant de tester le fonctionnement de la source fixe
+ */
 public class SourceFixeTest {
 
+    /**
+     * teste la bonne génération du message
+     * @throws Exception
+     */
     @Test
     void testMessageGeneration() throws Exception {
     	Information<Boolean> message = new Information<>(new Boolean[] {
@@ -27,6 +34,9 @@ public class SourceFixeTest {
         assertTrue(info.iemeElement(4));  // true
     }
 
+    /**
+     * teste la génération d'une erreur si le message est invalide
+     */
     @Test
     void testInvalidMessage() {
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {

@@ -6,8 +6,15 @@ import static org.junit.jupiter.api.Assertions.*;
 import information.Information;
 import transmetteurs.Recepteur;
 
+/**
+ * classe de test permettant de tester le fonctionnement du récepteur
+ */
 public class RecepteurTest {
 
+    /**
+     * teste la bonne conversion du numérique vers l'analogique
+     * @throws Exception
+     */
     @Test
     void testConversionAnalogToLogic() throws Exception {
         Float[] signal = {1.0f, 1.0f, 0.0f, 0.0f, 0.6f, 0.6f};
@@ -24,6 +31,9 @@ public class RecepteurTest {
         assertTrue(logicInfo.iemeElement(2));
     }
 
+    /**
+     * teste la bonne génération d'erreur si le bombre d'écho est en dessous de zéro
+     */
     @Test
     void testIllegalNbEch() {
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
