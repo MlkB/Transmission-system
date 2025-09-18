@@ -28,5 +28,4 @@ public class TransmetteurParfait<E> extends Transmetteur<E,E> {
             destinationConnectee.recevoir(this.informationEmise);
         }
     }
-
 }
