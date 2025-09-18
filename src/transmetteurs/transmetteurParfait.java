@@ -31,6 +31,7 @@ public class TransmetteurParfait<E> extends Transmetteur<E,E> {
 	@Override
 	public void connecter(DestinationInterface<E> destination) {
 		
+		throw new UnsupportedOperationException("Unimplemented method 'connecter'");
 	}
 
 }
