@@ -28,9 +28,11 @@ public class TransmetteurParfait<E> extends Transmetteur<E,E> {
             destinationConnectee.recevoir(this.informationEmise);
         }
     }
-	@Override
+
+    @Override
 	public void connecter(DestinationInterface<E> destination) {
 		destinationsConnectees.add(destination);
 	}
+
 
 }
