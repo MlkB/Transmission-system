@@ -28,10 +28,10 @@ public class TransmetteurParfait<E> extends Transmetteur<E,E> {
             destinationConnectee.recevoir(this.informationEmise);
         }
     }
+	
 	@Override
 	public void connecter(DestinationInterface<E> destination) {
-		
-		throw new UnsupportedOperationException("Unimplemented method 'connecter'");
+	
 	}
 
 }
