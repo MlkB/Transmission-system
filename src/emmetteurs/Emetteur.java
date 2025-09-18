@@ -8,11 +8,13 @@ import sources.Source;
 public class Emetteur<T> extends Source<Float> implements  DestinationInterface <T>{        
     
     private Information<Boolean> informationRecue;
-    private String TypeCodage; 
+    private String TypeCodage;
+    private int nbEch;  
 
-    public Emetteur(String Typecodage) {
+    public Emetteur(String Typecodage, int nbEch) {
         super();
         this.TypeCodage=Typecodage;
+        this.nbEch=nbEch;
     }
 
     //Iterator<DestinationInterface<E>> it = destinationsConnectees.iterator();
@@ -35,13 +37,20 @@ public class Emetteur<T> extends Source<Float> implements  DestinationInterface 
                     informationGeneree.add(0.0f); // Retour à zéro
                 }
             } else if ("NRZT".equalsIgnoreCase(TypeCodage)) {
-                boolean previousLevel = false; // niveau précédent : false = -1, true = 1
+               // boolean previousLevel = false; // niveau précédent : false = -1, true = 1
                 for (Boolean bit : informationRecue) {
                     if (bit) {
-                        // Inverse le niveau par rapport au précédent
-                        previousLevel = !previousLevel;
+                // bit 1 → on envoie uniquement +1
+                        for (int i = 0; i < nbEch; i++) {
+                            informationGeneree.add(1.0f);
+                        }
+                    } else {
+                        // bit 0 → on envoie uniquement -1
+                        for (int i = 0; i < nbEch; i++) {
+                            informationGeneree.add(-1.0f);
+                        }
                     }
-                    informationGeneree.add(previousLevel ? 1.0f : -1.0f);
+                //previousLevel = !previousLevel; // Inversion du niveau précédent
              }
             } else {
                 throw new InformationNonConformeException("Type de codage inconnu");

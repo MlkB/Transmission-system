@@ -3,7 +3,7 @@ import destinations.Destination;
 import sources.Source;
 import sources.SourceAleatoire;
 import sources.SourceFixe;
-import transmetteurs.Transmetteur;
+import transmetteurs.*;
 import transmetteurs.TransmetteurParfait;
 import destinations.DestinationFinale;
 import information.Information;
@@ -51,7 +51,7 @@ public class Simulateur {
     private Destination <Boolean>  destination = null;
 
     private Emetteur emetteur = null;
-    
+    private Recepteur recepteur = null;
    	
    
     /** Le constructeur de Simulateur construit une chaîne de
@@ -90,14 +90,16 @@ public class Simulateur {
     	
 
         transmetteurLogique = new TransmetteurParfait();
-        emetteur = new Emetteur("NRZT");
+        emetteur = new Emetteur("NRZT", 2);
+        recepteur = new Recepteur(2, 0f);
         destination = new DestinationFinale();
         
 
     	
     	source.connecter(emetteur);
         emetteur.connecter(transmetteurLogique);
-    	transmetteurLogique.connecter(destination);
+    	transmetteurLogique.connecter(recepteur);
+        recepteur.connecter(destination);
       		
     }
    
@@ -176,9 +178,11 @@ public class Simulateur {
     	
     	source.emettre();
         emetteur.recevoir(source.getInformationEmise());
-     	transmetteurLogique.emettre();
-    	
-    	System.out.println(destination.getInformationRecue());;
+        transmetteurLogique.emettre();
+        recepteur.recevoir(transmetteurLogique.getInformationAnalogEmise());
+        destination.recevoir(recepteur.getInformationEmise());
+    
+        System.out.println(destination.getInformationRecue());;
       	     	      
     }
    
@@ -191,7 +195,7 @@ public class Simulateur {
      */   	   
     public float  calculTauxErreurBinaire() {
     	Information<Boolean> infoEmise = source.getInformationEmise();
-    	Information<Boolean> infoRecue = emetteur.getInformationRecue();
+    	Information<Boolean> infoRecue = destination.getInformationRecue();
     	
     	int error = 0;
     	for (int i = 0; i<nbBitsMess; i++) {
