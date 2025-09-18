@@ -4,6 +4,11 @@ import destinations.DestinationInterface;
 import information.Information;
 import information.InformationNonConformeException;
 
+/**
+ * Classe représentant un objet de type récepteur dans une chaîne de transmission
+ * recevant l'information d'un transmetteur et la transmettant à une destination finale.
+ * L'objet reçoit une information analogique et la reconvertit en binaire
+ */
 public class Recepteur extends Transmetteur<Float, Boolean> implements DestinationInterface<Float> {
     
     private final int nbEch;
@@ -17,12 +22,16 @@ public class Recepteur extends Transmetteur<Float, Boolean> implements Destinati
         this.nbEch = nbEch;
         this.seuil = seuil;
     }
-
     /*Par défaut signaux de 0 à 1*/
     public Recepteur(int nbEch){
         this(nbEch,0.5f);
     }
 
+    /**
+     * permet de recevoir l'information de la part d'un transmetteur
+     * @param information  l'information  à recevoir
+     * @throws InformationNonConformeException
+     */
     @Override
     public void recevoir(Information<Float> information) throws InformationNonConformeException {
         this.informationRecue = information;
@@ -30,6 +39,11 @@ public class Recepteur extends Transmetteur<Float, Boolean> implements Destinati
     }
 
     /*Conversion analogique(float) en logique(Boolean)*/
+
+    /**
+     * Convertit un message analogique en message booléen
+     * @throws InformationNonConformeException
+     */
     @Override
     public void emettre() throws InformationNonConformeException {
         int n = this.informationRecue.nbElements();
