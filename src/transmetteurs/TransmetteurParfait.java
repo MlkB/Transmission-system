@@ -29,4 +29,10 @@ public class TransmetteurParfait<E> extends Transmetteur<E,E> {
         }
     }
 
+    @Override
+	public void connecter(DestinationInterface<E> destination) {
+		destinationsConnectees.add(destination);
+	}
+
+
 }
