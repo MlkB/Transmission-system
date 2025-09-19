@@ -1,2 +1,2 @@
 #!/bin/bash
-javac -cp "lib/junit-4.13.2.jar:lib/hamcrest-2.2.jar" -d bin src/*/*.java -Xlint:unchecked
+javac -cp "lib/junit-4.13.2.jar:lib/hamcrest-2.2.jar" -d bin */*/*.java -Xlint:unchecked
