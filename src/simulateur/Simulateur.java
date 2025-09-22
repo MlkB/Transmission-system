@@ -8,6 +8,9 @@ import transmetteurs.TransmetteurParfait;
 import destinations.DestinationFinale;
 import information.Information;
 import information.InformationNonConformeException;
+import visualisations.SondeLogique;
+import visualisations.SondeAnalogique;
+
 
 import emmetteurs.Emetteur;
 
@@ -50,6 +53,9 @@ public class Simulateur {
     /** le  composant Destination de la chaine de transmission */
     private Destination <Boolean>  destination = null;
 
+	/** la conversion numérique à analogique utilisée */
+	private String form = null;
+
     private Emetteur emetteur = null;
     private Recepteur recepteur = null;
    	
@@ -90,17 +96,20 @@ public class Simulateur {
     	
 
         transmetteurLogique = new TransmetteurParfait();
-        emetteur = new Emetteur("NRZT", 2);
+		if (form != null) {
+			emetteur = new Emetteur(form, 2);
+		} else {
+			emetteur = new Emetteur("NRZT", 2); // default
+		}
         recepteur = new Recepteur(2, 0f);
         destination = new DestinationFinale();
-        
+
 
     	
     	source.connecter(emetteur);
         emetteur.connecter(transmetteurLogique);
     	transmetteurLogique.connecter(recepteur);
         recepteur.connecter(destination);
-      		
     }
    
    
@@ -159,6 +168,15 @@ public class Simulateur {
     			else 
     				throw new ArgumentsException("Valeur du parametre -mess invalide : " + args[i]);
     		}
+
+			else if (args[i].matches("-form")) {
+				i++;
+				if (i < args.length) {
+					form = args[i];
+				} else {
+					throw new ArgumentsException("Valeur du parametre -form manquante");
+				}
+			}
     		
 
     		else throw new ArgumentsException("Option invalide :"+ args[i]);
@@ -196,14 +214,18 @@ public class Simulateur {
     public float  calculTauxErreurBinaire() {
     	Information<Boolean> infoEmise = source.getInformationEmise();
     	Information<Boolean> infoRecue = destination.getInformationRecue();
-    	
-    	int error = 0;
-    	for (int i = 0; i<nbBitsMess; i++) {
-    		if (infoEmise.iemeElement(i) != infoRecue.iemeElement(i)) error++;
-    	}
-    	int taux = (error)/nbBitsMess;
-    	return  taux;
-    }
+
+		int size = Math.min(infoEmise.nbElements(), infoRecue.nbElements());
+		int error = 0;
+		for (int i = 0; i < size; i++) {
+			if (!infoEmise.iemeElement(i).equals(infoRecue.iemeElement(i))) {
+				error++;
+			}
+		}
+		return (float) error / size;
+	}
+
+
    
    
    
