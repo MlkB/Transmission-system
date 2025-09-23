@@ -14,12 +14,12 @@ import sources.Source;
 public class Emetteur<T> extends Source<Float> implements  DestinationInterface <T>{        
     
     private Information<Boolean> informationRecue;
-    private String TypeCodage;
+    private String typeCodage;
     private int nbEch;  
 
-    public Emetteur(String Typecodage, int nbEch) {
+    public Emetteur(String typeCodage, int nbEch) {
         super();
-        this.TypeCodage=Typecodage;
+        this.typeCodage = (typeCodage == null) ? "RZ" : typeCodage;
         this.nbEch=nbEch;
     }
 
@@ -29,7 +29,7 @@ public class Emetteur<T> extends Source<Float> implements  DestinationInterface 
      * Fonction permettant de convertir l'information booléenne reçue
      * en information analogique selon trois types de codages :
      * NRZ, RZ et NRZT. Le type de codage est déterminé selon la valeur
-     * de la fonction TypeCodage
+     * de la fonction typeCodage
      * @throws InformationNonConformeException
      */
     public void convertir_signal() throws InformationNonConformeException {
@@ -37,33 +37,28 @@ public class Emetteur<T> extends Source<Float> implements  DestinationInterface 
             informationGeneree = new Information<>();
             // codage en ligne
 
-            if ("NRZ".equalsIgnoreCase(TypeCodage)) {
+            if ("NRZ".equalsIgnoreCase(typeCodage)) {
                  for (Boolean bit : informationRecue) {
-                    informationGeneree.add(bit ? 1.0f : -1.0f);
+                     for (int i = 0; i < nbEch; i++) {
+                         informationGeneree.add(bit ? 1.0f : -1.0f);
+                     }
                 }
 
 
-            } else if ("RZ".equalsIgnoreCase(TypeCodage)) {
+            } else if ("RZ".equalsIgnoreCase(typeCodage)) {
                 for (Boolean bit : informationRecue) {
                     informationGeneree.add(bit ? 1.0f : -1.0f);
                     informationGeneree.add(0.0f); // Retour à zéro
                 }
-            } else if ("NRZT".equalsIgnoreCase(TypeCodage)) {
-               // boolean previousLevel = false; // niveau précédent : false = -1, true = 1
+            } else if ("NRZT".equalsIgnoreCase(typeCodage)) {
                 for (Boolean bit : informationRecue) {
-                    if (bit) {
-                // bit 1 → on envoie uniquement +1
-                        for (int i = 0; i < nbEch; i++) {
-                            informationGeneree.add(1.0f);
-                        }
-                    } else {
-                        // bit 0 → on envoie uniquement -1
-                        for (int i = 0; i < nbEch; i++) {
-                            informationGeneree.add(-1.0f);
-                        }
+                    float level = bit ? 1.0f : -1.0f;
+                    for (int i = 0; i < nbEch; i++) {
+                        informationGeneree.add(level);
                     }
-                //previousLevel = !previousLevel; // Inversion du niveau précédent
-             }
+                }
+
+
             } else {
                 throw new InformationNonConformeException("Type de codage inconnu");
             }

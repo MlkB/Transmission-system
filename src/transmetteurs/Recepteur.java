@@ -13,18 +13,20 @@ public class Recepteur extends Transmetteur<Float, Boolean> implements Destinati
     
     private final int nbEch;
     private final float seuil;
+    private String typeCodage;
 
-    public Recepteur(int nbEch, Float seuil){
+    public Recepteur(int nbEch, Float seuil, String typeCodage){
         super();
         if(nbEch <= 0){
             throw new IllegalArgumentException("nbEch doit être > 0");
         }
+        this.typeCodage = (typeCodage == null) ? "RZ" : typeCodage; // fallback
         this.nbEch = nbEch;
         this.seuil = seuil;
     }
     /*Par défaut signaux de 0 à 1*/
     public Recepteur(int nbEch){
-        this(nbEch,0.5f);
+        this(nbEch,0.5f,"RZ");
     }
 
     /**
@@ -50,28 +52,65 @@ public class Recepteur extends Transmetteur<Float, Boolean> implements Destinati
         int nbSymbols = n/nbEch; // -> Combien de bits reçu
 
         Boolean[] bits = new Boolean[nbSymbols];
+        if (typeCodage.equalsIgnoreCase("NRZ") || typeCodage.equalsIgnoreCase("RZ")) {
+            for(int i = 0; i < nbSymbols; i++) {
+                float moy = 0f;
 
-        for(int i = 0; i < nbSymbols; i++){
+                /*On fixe le début et la fin de l'intervalle en cours*/
+                int debut = i * nbEch;
+                int fin = (i + 1) * nbEch;
+
+                /*On calcule la moyenne de la valeur des échantillons du symbole*/
+                for (int j = debut; j < fin; j++) {
+                    moy += this.informationRecue.iemeElement(j);
+                }
+
+                moy /= nbEch;
+
+                /*Décision si true ou false en fonction du seuil*/
+                if (moy < seuil) {
+                    bits[i] = false;
+                } else if (moy >= seuil) {
+                    bits[i] = true;
+                }
+            }
+        }
+        else if (typeCodage.equalsIgnoreCase("NRZT")) {
+            for(int i = 0; i < nbSymbols; i++) {
             float moy = 0f;
 
-            /*On fixe le début et la fin de l'intervalle en cours*/
             int debut = i * nbEch;
-            int fin = (i+1) * nbEch;
+            int fin = (i + 1) * nbEch;
 
-            /*On calcule la moyenne de la valeur des échantillons du symbole*/
-            for(int j = debut; j < fin; j++){
+            for (int j = debut; j < fin; j++) {
                 moy += this.informationRecue.iemeElement(j);
             }
 
             moy /= nbEch;
 
-            /*Décision si true ou false en fonction du seuil*/
-            if(moy < seuil){
+            if (moy < seuil) {
                 bits[i] = false;
-            } else if (moy >= seuil) {
+            } else {
                 bits[i] = true;
             }
+        }    for(int i = 0; i < nbSymbols; i++) {
+            float moy = 0f;
 
+            int debut = i * nbEch;
+            int fin = (i + 1) * nbEch;
+
+            for (int j = debut; j < fin; j++) {
+                moy += this.informationRecue.iemeElement(j);
+            }
+
+            moy /= nbEch;
+
+            if (moy < seuil) {
+                bits[i] = false;
+            } else {
+                bits[i] = true;
+            }
+        }
         }
         this.informationEmise = new Information<>(bits);
 

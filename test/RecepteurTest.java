@@ -20,7 +20,7 @@ public class RecepteurTest {
         Float[] signal = {1.0f, 1.0f, 0.0f, 0.0f, 0.6f, 0.6f};
         Information<Float> analogInfo = new Information<>(signal);
 
-        Recepteur recepteur = new Recepteur(2, 0.5f);
+        Recepteur recepteur = new Recepteur(2, 0.5f;"NRZ");
         recepteur.recevoir(analogInfo);
 
         Information<Boolean> logicInfo = recepteur.getInformationEmise();

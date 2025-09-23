@@ -54,7 +54,7 @@ public class Simulateur {
     private Destination <Boolean>  destination = null;
 
 	/** la conversion numérique à analogique utilisée */
-	private String form = null;
+	private String form = "RZ";
 
     private Emetteur emetteur = null;
     private Recepteur recepteur = null;
@@ -101,7 +101,7 @@ public class Simulateur {
 		} else {
 			emetteur = new Emetteur("NRZT", 2); // default
 		}
-        recepteur = new Recepteur(2, 0f);
+        recepteur = new Recepteur(2, 0f, form);
         destination = new DestinationFinale();
 
 
@@ -177,6 +177,7 @@ public class Simulateur {
 					throw new ArgumentsException("Valeur du parametre -form manquante");
 				}
 			}
+
     		
 
     		else throw new ArgumentsException("Option invalide :"+ args[i]);
