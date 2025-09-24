@@ -56,6 +56,9 @@ public class Simulateur {
 	/** la conversion numérique à analogique utilisée */
 	private String form = "RZ";
 
+	/** la conversion numérique à analogique utilisée */
+	private int nEch = 30;
+
     private Emetteur emetteur = null;
     private Recepteur recepteur = null;
    	
@@ -97,11 +100,11 @@ public class Simulateur {
 
         transmetteurLogique = new TransmetteurParfait();
 		if (form != null) {
-			emetteur = new Emetteur(form, 2);
+			emetteur = new Emetteur(form, nEch);
 		} else {
-			emetteur = new Emetteur("NRZT", 2); // default
+			emetteur = new Emetteur("NRZT", nEch); // default
 		}
-        recepteur = new Recepteur(2, 0f, form);
+        recepteur = new Recepteur(nEch, 0f, form);
         destination = new DestinationFinale();
 
 
@@ -175,6 +178,16 @@ public class Simulateur {
 					form = args[i];
 				} else {
 					throw new ArgumentsException("Valeur du parametre -form manquante");
+				}
+			}
+
+			else if (args[i].matches("-ne")) {
+				i++;
+				try {
+					nEch = Integer.valueOf(args[i]);
+				}
+				catch (Exception e) {
+					throw new ArgumentsException("Valeur du parametre -seed  invalide :" + args[i]);
 				}
 			}
 

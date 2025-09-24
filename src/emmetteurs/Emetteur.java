@@ -47,19 +47,46 @@ public class Emetteur<T> extends Source<Float> implements  DestinationInterface 
 
             } else if ("RZ".equalsIgnoreCase(typeCodage)) {
                 for (Boolean bit : informationRecue) {
-                    informationGeneree.add(bit ? 1.0f : -1.0f);
+                    for (int i = 0; i < nbEch-1; i++) {
+                        informationGeneree.add(bit ? 1.0f : -1.0f);
+                    }
                     informationGeneree.add(0.0f); // Retour à zéro
                 }
             } else if ("NRZT".equalsIgnoreCase(typeCodage)) {
-                for (Boolean bit : informationRecue) {
-                    float level = bit ? 1.0f : -1.0f;
+                for (int b = 0; b < informationRecue.nbElements(); b++) {
+                    float level = informationRecue.iemeElement(b) ? 1.0f : -1.0f;
+                    float nextLevel = (b < informationRecue.nbElements() - 1)
+                            ? (informationRecue.iemeElement(b + 1) ? 1.0f : -1.0f)
+                            : 0.0f; // retour à 0 après le dernier bit
+
+                    int third = nbEch / 3;
+
                     for (int i = 0; i < nbEch; i++) {
-                        informationGeneree.add(level);
+                        float value;
+
+                        if (nextLevel == level) {
+                            // Pas de transition si le bit suivant est identique
+                            value = level;
+                        } else {
+                            // Transition progressive
+                            if (i < third) {
+                                // Montée de 0 -> niveau au début du bit
+                                float alpha = (float) i / third;
+                                value = alpha * level;
+                            } else if (i < 2 * third) {
+                                // Niveau stable
+                                value = level;
+                            } else {
+                                // Descente niveau -> 0 si bit différent
+                                float alpha = (float) (i - 2 * third) / third;
+                                value = level * (1 - alpha);
+                            }
+                        }
+
+                        informationGeneree.add(value);
                     }
                 }
-
-
-            } else {
+        } else {
                 throw new InformationNonConformeException("Type de codage inconnu");
             }
         }
