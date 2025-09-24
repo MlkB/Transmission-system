@@ -1,9 +1,11 @@
 package emmetteurs;
 
 import destinations.DestinationInterface;
+
 import information.Information;
 import information.InformationNonConformeException;
 import sources.Source;
+import visualisations.SondeAnalogique;
 
 public class Emetteur<T> extends Source<Float> implements  DestinationInterface <T>{        
     
@@ -71,10 +73,17 @@ public class Emetteur<T> extends Source<Float> implements  DestinationInterface 
           public Information getInformationRecue() {
                 return this.informationRecue;
           }
-          
 
-
-    }
+          @Override
+          public void connecter(SondeAnalogique sondeTransmetteur) {
+               for (DestinationInterface<Float> destinationConnectee : destinationsConnectees) {
+                     if (destinationConnectee == sondeTransmetteur) {
+                          return; // Déjà connecté
+                      
+                     } else { destinationsConnectees.add(sondeTransmetteur);   }       
+              
+                }
+            }
     
     /**
      * analyse les arguments passés en ligne de commande
@@ -89,3 +98,11 @@ public class Emetteur<T> extends Source<Float> implements  DestinationInterface 
     
         * @throws InformationNonConformeException si l'Information comporte une anomalie
         */
+
+
+
+     
+
+ 
+
+    }
