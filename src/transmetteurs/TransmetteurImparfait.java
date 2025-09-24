@@ -76,7 +76,6 @@ public class TransmetteurImparfait<E> extends Transmetteur {
     private void genererBBAG() {
         this.informationEmise = new Information<Float>();
         calculerVariance();
-        Random rand = new Random(); // create an instance
         for (int i = 0; i < informationRecue.nbElements(); i++) {
             float echantillon = (Float) informationRecue.iemeElement(i); // cast en Float
             double bruitEchantillon = rand.nextGaussian() * Math.sqrt(variance);

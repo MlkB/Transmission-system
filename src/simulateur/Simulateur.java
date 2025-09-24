@@ -61,6 +61,12 @@ public class Simulateur {
     /** le rapport signal sur bruit SNR utilisé en décibel */
 	private Float SNRpB;
 
+    /** signal bruité par graine*/
+    private Boolean bruitSeeded;
+
+    /** graine du bruit */
+    private int bruitSeed;
+
     private Emetteur emetteur = null;
     private Recepteur recepteur = null;
    	
@@ -103,7 +109,12 @@ public class Simulateur {
             transmetteurLogique = new TransmetteurParfait();
         }
         else {
-            transmetteurLogique = new TransmetteurImparfait<>(nEch, SNRpB);
+            if (bruitSeeded) {
+                transmetteurLogique = new TransmetteurImparfait<>(nEch, SNRpB,seed);
+            }
+            else {
+                transmetteurLogique = new TransmetteurImparfait<>(nEch, SNRpB);
+            }
         }
 		if (form != null) {
 			emetteur = new Emetteur(form, nEch);
@@ -222,7 +233,17 @@ public class Simulateur {
 				}
 			}
 
-    		
+    		else if (args[i].matches("-seedBruit")) {
+                bruitSeeded = true;
+                i++; 
+                try { 
+                    bruitSeed = Integer.valueOf(args[i]);
+                } catch (Exception e) {
+                    throw new ArgumentsException("Valeur du parametre -seedBruit invalide :" + args[i]);
+                }           		
+}
+
+
 
     		else throw new ArgumentsException("Option invalide :"+ args[i]);
     	}
