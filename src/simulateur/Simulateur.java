@@ -8,7 +8,7 @@ import transmetteurs.TransmetteurParfait;
 import destinations.DestinationFinale;
 import information.Information;
 import information.InformationNonConformeException;
-
+import visualisations.*;
 import emmetteurs.Emetteur;
 
 
@@ -50,6 +50,8 @@ public class Simulateur {
     /** le  composant Destination de la chaine de transmission */
     private Destination <Boolean>  destination = null;
 
+    private int nEchantillon = 30;
+
     private Emetteur emetteur = null;
     private Recepteur recepteur = null;
    	
@@ -88,19 +90,26 @@ public class Simulateur {
             source = SF;
         }
     	
-
+        SondeLogique sondeSource = new SondeLogique("source",100 );
+        SondeAnalogique sondeEmetteur = new SondeAnalogique("récepteur");
+        SondeAnalogique sondeTransmetteur = new SondeAnalogique("transmetteur");
+        SondeLogique sondeRecepteur = new SondeLogique("dst", 100);
         transmetteurLogique = new TransmetteurParfait();
         emetteur = new Emetteur("NRZT", 2);
         recepteur = new Recepteur(2, 0f);
         destination = new DestinationFinale();
         
-
-    	
-    	source.connecter(emetteur);
-        emetteur.connecter(transmetteurLogique);
-    	transmetteurLogique.connecter(recepteur);
-        recepteur.connecter(destination);
-      		
+        if (affichage) {
+                   
+            source.connecter(emetteur);
+            source.connecter(sondeSource);
+            emetteur.connecter(sondeEmetteur);
+            emetteur.connecter(transmetteurLogique);
+            transmetteurLogique.connecter(sondeTransmetteur);
+            recepteur.connecter(transmetteurLogique);
+            recepteur.connecter(sondeRecepteur);
+            recepteur.connecter(destination);
+        }
     }
    
    

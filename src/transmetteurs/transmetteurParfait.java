@@ -11,10 +11,8 @@ public class TransmetteurParfait<E> extends Transmetteur<E,E> {
         super();
     }
     @Override
-    public void recevoir(Information information) throws InformationNonConformeException {
-        if (information == null) {
-            throw new InformationNonConformeException("L'information est nulle");
-        }
+    public void recevoir(Information information) throws InformationNonConformeException {        if (information == null) {
+    
         this.informationRecue = information;
 
     }
