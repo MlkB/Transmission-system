@@ -14,13 +14,27 @@ public class TransmetteurImparfait<E> extends Transmetteur {
     public float variance;
     public float SNRdB;
     protected int nEch;
+    private int seed;
+    private Random rand;
     protected LinkedList<Float> bruit = new LinkedList<Float>();
 
+// Constructeur sans graine (bruit totalement aléatoire)
     public TransmetteurImparfait(int nEch, float SNRdB) {
         super();
         this.SNRdB = SNRdB;
         this.nEch = nEch;
+        this.rand = new Random(); // aléatoire total
     }
+
+    // Constructeur avec graine
+    public TransmetteurImparfait(int nEch, float SNRdB, int seed) {
+        super();
+        this.SNRdB = SNRdB;
+        this.nEch = nEch;
+        this.seed = seed;
+        this.rand = new Random(seed); // reproductible
+    }
+
 
     @Override
     public void connecter(DestinationInterface destination) {
@@ -54,7 +68,9 @@ public class TransmetteurImparfait<E> extends Transmetteur {
 
     private void calculerVariance() {
         calculPuissanceSignal();
-        this.variance = (this.puissanceSignal * nEch) / (2 * (float) Math.pow(10, SNRdB / 10));
+        // estimate signal power per bit instead of per sample
+        float bitsignal = puissanceSignal / nEch; 
+        this.variance = bitsignal / (float) Math.pow(10, SNRdB / 10.0);
     }
 
     private void genererBBAG() {

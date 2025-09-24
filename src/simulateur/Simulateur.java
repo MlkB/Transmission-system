@@ -47,7 +47,7 @@ public class Simulateur {
     private Source <Boolean>  source = null;
     
     /** le  composant Transmetteur parfait logique de la chaine de transmission */
-    private Transmetteur <Boolean, Boolean>  transmetteurLogique = null;
+    private Transmetteur <Boolean, Float>  transmetteurLogique = null;
     
     /** le  composant Destination de la chaine de transmission */
     private Destination <Boolean>  destination = null;
@@ -113,12 +113,27 @@ public class Simulateur {
         recepteur = new Recepteur(nEch, 0f, form);
         destination = new DestinationFinale();
 
+        SondeLogique sondeSource = new SondeLogique("source",100 );
+        SondeAnalogique sondeEmetteur = new SondeAnalogique("récepteur");
+        SondeAnalogique sondeTransmetteur = new SondeAnalogique("transmetteur");
+        SondeLogique sondeRecepteur = new SondeLogique("dst", 100);
+        transmetteurLogique = new TransmetteurParfait();
+        emetteur = new Emetteur("NRZT", 2);
+        recepteur = new Recepteur(2, 0f, form);
+        destination = new DestinationFinale();
 
-    	
-    	source.connecter(emetteur);
+        source.connecter(emetteur);
         emetteur.connecter(transmetteurLogique);
-    	transmetteurLogique.connecter(recepteur);
+        recepteur.connecter(transmetteurLogique);
         recepteur.connecter(destination);
+        
+        if (affichage) {
+
+            source.connecter(sondeSource);
+            emetteur.connecter(sondeEmetteur);
+            transmetteurLogique.connecter(sondeTransmetteur);
+            recepteur.connecter(sondeRecepteur);
+        }
     }
    
    

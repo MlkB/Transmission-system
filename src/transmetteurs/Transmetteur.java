@@ -66,8 +66,8 @@ public abstract  class Transmetteur <R,E> implements  DestinationInterface <R>, 
      * connecte une destination à la sortie du transmetteur
      * @param recepteur  la destination à connecter
      */
-    public void connecter (Recepteur recepteur) {
-    	destinationsConnectees.add((DestinationInterface<E>) recepteur); 
+    public void connecter (DestinationInterface<E> destination) {
+    	destinationsConnectees.add((DestinationInterface<E>) destination); 
     }
 
     /**
