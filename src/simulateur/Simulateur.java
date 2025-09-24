@@ -4,7 +4,6 @@ import sources.Source;
 import sources.SourceAleatoire;
 import sources.SourceFixe;
 import transmetteurs.*;
-import transmetteurs.TransmetteurParfait;
 import destinations.DestinationFinale;
 import information.Information;
 import information.InformationNonConformeException;
@@ -56,8 +55,11 @@ public class Simulateur {
 	/** la conversion numérique à analogique utilisée */
 	private String form = "RZ";
 
-	/** la conversion numérique à analogique utilisée */
+	/** le nombre d'échantilllons utilisés */
 	private int nEch = 30;
+
+    /** le rapport signal sur bruit SNR utilisé en décibel */
+	private Float SNRpB;
 
     private Emetteur emetteur = null;
     private Recepteur recepteur = null;
@@ -97,8 +99,12 @@ public class Simulateur {
             source = SF;
         }
     	
-
-        transmetteurLogique = new TransmetteurParfait();
+        if (SNRpB == null) {
+            transmetteurLogique = new TransmetteurParfait();
+        }
+        else {
+            transmetteurLogique = new TransmetteurImparfait<>(nEch, SNRpB);
+        }
 		if (form != null) {
 			emetteur = new Emetteur(form, nEch);
 		} else {
@@ -185,6 +191,16 @@ public class Simulateur {
 				i++;
 				try {
 					nEch = Integer.valueOf(args[i]);
+				}
+				catch (Exception e) {
+					throw new ArgumentsException("Valeur du parametre -seed  invalide :" + args[i]);
+				}
+			}
+
+            else if (args[i].matches("-snrpb")) {
+				i++;
+				try {
+					SNRpB = Float.valueOf(args[i]);
 				}
 				catch (Exception e) {
 					throw new ArgumentsException("Valeur du parametre -seed  invalide :" + args[i]);
