@@ -1,7 +1,6 @@
 package transmetteurs;
 
 import sources.*;
-import visualisations.SondeAnalogique;
 import destinations.*;
 import information.*;
 
@@ -65,10 +64,10 @@ public abstract  class Transmetteur <R,E> implements  DestinationInterface <R>, 
     }
     /**
      * connecte une destination à la sortie du transmetteur
-     * @param sondeTransmetteur  la destination à connecter
+     * @param recepteur  la destination à connecter
      */
-    public void connecter (SondeAnalogique sondeTransmetteur) {
-    	destinationsConnectees.add((DestinationInterface<E>) sondeTransmetteur); 
+    public void connecter (Recepteur recepteur) {
+    	destinationsConnectees.add((DestinationInterface<E>) recepteur); 
     }
 
     /**
@@ -91,10 +90,5 @@ public abstract  class Transmetteur <R,E> implements  DestinationInterface <R>, 
      * émet l'information construite par le transmetteur
      * @throws InformationNonConformeException si l'Information comporte une anomalie
      */
-    public  abstract void emettre() throws InformationNonConformeException;
-
-    public void connecter(DestinationInterface<E> destination) {
-      // TODO Auto-generated method stub
-      throw new UnsupportedOperationException("Unimplemented method 'connecter'");
-    }   
+    public  abstract void emettre() throws InformationNonConformeException;   
 }
