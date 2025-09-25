@@ -1,7 +1,6 @@
 package sources;
 
 import information.*;
-import visualisations.SondeLogique;
 import destinations.DestinationInterface;
 import java.util.*;
 
@@ -36,6 +35,8 @@ public  abstract class Source <T> implements  SourceInterface <T> {
 		informationGeneree = null;
 		informationEmise = null;
     }
+
+    
     
     /**
      * retourne la dernière information émise par la source
@@ -70,5 +71,18 @@ public  abstract class Source <T> implements  SourceInterface <T> {
 		this.informationEmise = informationGeneree;   			 			      
     }
 
-    public abstract void connecterSonde(SondeLogique sondeSource);
-    }
+
+
+
+    @Override
+    public abstract void connecter(SourceInterface<Boolean> src);
+
+
+
+    /**
+     * permet d'émettre l'information générée aux destinations connectées
+     * @throws information.InformationNonConformeException
+     */
+
+
+}

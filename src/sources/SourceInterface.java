@@ -2,6 +2,7 @@ package sources;
 
 import information.*;
 import visualisations.SondeAnalogique;
+import visualisations.SondeLogique;
 import destinations.DestinationInterface;
 import emmetteurs.Emetteur;
 
@@ -28,5 +29,9 @@ public interface SourceInterface <T>  {
      * pour émettre l'information contenue dans une source
      * @throws InformationNonConformeException si l'Information comporte une anomalie
      */
-    public void emettre() throws InformationNonConformeException; 
+    public void emettre() throws InformationNonConformeException;
+    SourceInterface<Boolean> connecter(SondeLogique sondeLogique);
+    SourceInterface<Integer> connecter(SondeAnalogique sondeAnalogique);
+
+    void connecter(SourceInterface<Boolean> src);
 }

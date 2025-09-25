@@ -2,11 +2,17 @@ package sources;
 
 import java.util.Random;
 
+import destinations.DestinationInterface;
 import emmetteurs.Emetteur;
 import information.Information;
 import information.InformationNonConformeException;
-import visualisations.SondeLogique; 
+import visualisations.SondeAnalogique;
+import visualisations.SondeLogique;
 
+
+/**
+ * Classe d'un composant représentant la source aléatoire d'une chaîne de transmission
+ */
 public class SourceAleatoire extends Source {
 	
 		public Integer length = null;
@@ -15,16 +21,30 @@ public class SourceAleatoire extends Source {
 		public SourceAleatoire() {
 			super();
 		}
-		
-		public void setSeed(int seed) {
+
+	/**
+	 * permet de fixer une graine pour la génération du message aléatoire
+	 * @param seed
+	 */
+	public void setSeed(int seed) {
 			this.seed = seed;
 		}
-		
+
+	/**
+	 * permet de fixer la longueur du message aléatoire
+	 * @param length
+	 */
 		public void setLength(int length) {
 			this.length = length;
 		}
-		
-		public void generer() throws InformationNonConformeException{
+
+	/**
+	 * permet de générer un message booléen aléatoire
+	 * le message aléatoire est soit de longueur 100, soit de longueur fixée par le paramètre length
+	 * le message aléatoire est soit pseudo-aléatoire, soit généré selon la graine fixée par le paramètre seed
+	 * @throws InformationNonConformeException si un élément du message n'est pas un booléen
+	 */
+	public void generer() throws InformationNonConformeException{
 			if (this.length == null) this.length = 100;
 			if (this.seed == null) {
 			Random rand = new Random();
@@ -52,16 +72,13 @@ public class SourceAleatoire extends Source {
 			}
 		}
 
-		@Override
-		public void connecter(Emetteur emetteur) {
-			// TODO Auto-generated method stub
-			throw new UnsupportedOperationException("Unimplemented method 'connecter'");
-		}
-
-		@Override
-		public void connecterSonde(SondeLogique sondeSource) {
-			// TODO Auto-generated method stub
-			throw new UnsupportedOperationException("Unimplemented method 'connecterSonde'");
+	public void connecter(SourceInterface src) {
+	
+		if (!destinationsConnectees.contains(src)) {
+			destinationsConnectees.add(src);
 		}
 		
+	}
+	
 }
+

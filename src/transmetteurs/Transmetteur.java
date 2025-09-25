@@ -68,10 +68,6 @@ public abstract  class Transmetteur <R,E> implements  DestinationInterface <R>, 
      * connecte une destination à la sortie du transmetteur
      * @param destination  la destination à connecter
      */
-    public void connecter (Destination<Boolean> destination) {
-    	destinationsConnectees.add((DestinationInterface<E>) destination); 
-    }
-
     /**
      * déconnecte une destination de la la sortie du transmetteur
      * @param destination  la destination à déconnecter
@@ -92,17 +88,15 @@ public abstract  class Transmetteur <R,E> implements  DestinationInterface <R>, 
      * émet l'information construite par le transmetteur
      * @throws InformationNonConformeException si l'Information comporte une anomalie
      */
-    public  abstract void emettre() throws InformationNonConformeException;   
+    public  abstract void emettre() throws InformationNonConformeException;
+
+    /**
+     * permet de se connecter à une destination ou à un récepteur
+     * @param destination  la destination à connecter
+     */
+    public void connecter(DestinationInterface<E> destination) {
+         destinationsConnectees.add((DestinationInterface<E>) destination);}
 
 
-    public void connecterSonde(Sonde sonde) {
-        
-              for (DestinationInterface<E> destinationConnectee : destinationsConnectees) {
-                if (destinationConnectee == sonde) {
-                     return; // Déjà connecté
-      }
-                else { destinationsConnectees.add((DestinationInterface<E>) sonde);   }       
-         
-           }
-      }
+    
 }

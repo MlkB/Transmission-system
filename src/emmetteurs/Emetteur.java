@@ -1,133 +1,111 @@
 package emmetteurs;
 
 import destinations.DestinationInterface;
-
 import information.Information;
 import information.InformationNonConformeException;
 import sources.Source;
+import sources.SourceInterface;
 import transmetteurs.Transmetteur;
 import visualisations.Sonde;
 import visualisations.SondeAnalogique;
 import visualisations.SondeLogique;
 
-public class Emetteur<T> extends Source<Float> implements  DestinationInterface <T>{        
-    
-    private Information<Boolean> informationRecue;
-    private String TypeCodage;
-    private int nbEch;  
+public class Emetteur extends Source<Float> implements DestinationInterface<Boolean> {
 
-    public Emetteur(String Typecodage, int nbEch) {
+    private Information<Boolean> informationRecue;
+    private String typeCodage;
+    private int nbEch;
+
+    public Emetteur(String typeCodage, int nbEch) {
         super();
-        this.TypeCodage=Typecodage;
-        this.nbEch=nbEch;
+        this.typeCodage = (typeCodage == null) ? "RZ" : typeCodage;
+        this.nbEch = nbEch;
     }
 
-    //Iterator<DestinationInterface<E>> it = destinationsConnectees.iterator();
+    /** Convertit l'information binaire en signal analogique */
+    private void convertirSignal() throws InformationNonConformeException {
+        informationGeneree = new Information<>();
 
-
-        public void convertir_signal() throws InformationNonConformeException {
-                    
-            informationGeneree = new Information<>();
-            // codage en ligne 
-        
-            if ("NRZ".equalsIgnoreCase(TypeCodage)) {
-                 for (Boolean bit : informationRecue) {
-                    informationGeneree.add(bit ? 1.0f : -1.0f);
-                }
-            
-            
-            } else if ("RZ".equalsIgnoreCase(TypeCodage)) {
+        switch (typeCodage.toUpperCase()) {
+            case "NRZ":
                 for (Boolean bit : informationRecue) {
-                    informationGeneree.add(bit ? 1.0f : -1.0f);
-                    informationGeneree.add(0.0f); // Retour à zéro
-                }
-            } else if ("NRZT".equalsIgnoreCase(TypeCodage)) {
-               // boolean previousLevel = false; // niveau précédent : false = -1, true = 1
-                for (Boolean bit : informationRecue) {
-                    if (bit) {
-                // bit 1 → on envoie uniquement +1
-                        for (int i = 0; i < nbEch; i++) {
-                            informationGeneree.add(1.0f);
-                        }
-                    } else {
-                        // bit 0 → on envoie uniquement -1
-                        for (int i = 0; i < nbEch; i++) {
-                            informationGeneree.add(-1.0f);
-                        }
+                    for (int i = 0; i < nbEch; i++) {
+                        informationGeneree.add(bit ? 1.0f : -1.0f);
                     }
-                //previousLevel = !previousLevel; // Inversion du niveau précédent
-             }
-            } else {
-                throw new InformationNonConformeException("Type de codage inconnu");
-            }
+                }
+                break;
+
+            case "RZ":
+                for (Boolean bit : informationRecue) {
+                    for (int i = 0; i < nbEch - 1; i++) {
+                        informationGeneree.add(bit ? 1.0f : -1.0f);
+                    }
+                    informationGeneree.add(0.0f);
+                }
+                break;
+
+            case "NRZT":
+                for (int b = 0; b < informationRecue.nbElements(); b++) {
+                    float level = informationRecue.iemeElement(b) ? 1.0f : -1.0f;
+                    float nextLevel = (b < informationRecue.nbElements() - 1)
+                            ? (informationRecue.iemeElement(b + 1) ? 1.0f : -1.0f)
+                            : 0.0f;
+
+                    int third = nbEch / 3;
+                    for (int i = 0; i < nbEch; i++) {
+                        float value;
+                        if (nextLevel == level) {
+                            value = level;
+                        } else if (i < third) {
+                            value = level * (float) i / third;
+                        } else if (i < 2 * third) {
+                            value = level;
+                        } else {
+                            value = level * (1 - (float) (i - 2 * third) / third);
+                        }
+                        informationGeneree.add(value);
+                    }
+                }
+                break;
+
+            default:
+                throw new InformationNonConformeException("Type de codage inconnu : " + typeCodage);
         }
-          @Override
-        public void recevoir(Information<T> information) throws InformationNonConformeException {
-            if (information == null) {
-                throw new InformationNonConformeException("L'information est vide");
-            }
-            this.informationRecue = (Information<Boolean>) information;
-            convertir_signal();
-            emettre();
-        
+    }
+
+    @Override
+    public void recevoir(Information<Boolean> information) throws InformationNonConformeException {
+        if (information == null) {
+            throw new InformationNonConformeException("L'information est vide");
         }
+        this.informationRecue = information;
+        convertirSignal();
+        emettre(); // send to all connected destinations
+    }
 
-          @Override
-          public Information getInformationRecue() {
-                return this.informationRecue;
-          }
+    @Override
+    public Information<Boolean> getInformationRecue() {
+        return this.informationRecue;
+    }
 
-          public void connecter(Transmetteur transmetteurLogique) {
-               for (DestinationInterface<Float> destinationConnectee : destinationsConnectees) {
-                     if (destinationConnectee == transmetteurLogique) {
-                          return; // Déjà connecté
-                      
-                     } else { destinationsConnectees.add(transmetteurLogique);
-              
-            }}}
-            public void connecterSonde(Sonde sonde) {
-               for (DestinationInterface<Float> destinationConnectee : destinationsConnectees) {
-                     if (destinationConnectee == sonde) {
-                          return; // Déjà connecté
-                      
-                     } else { destinationsConnectees.add(sonde);   }       
-              
-              }
-
-    
-            }      
-    /**
-     * analyse les arguments passés en ligne de commande
-     * et initialise les attributs du Simulateur en conséquence
-     * 
-     * @param args  les arguments passés en ligne de commande
-     * 
-     * @throws Exception si un problème survient lors de l'analyse
-     * des arguments
-     *
-     * 
-    
-        * @throws InformationNonConformeException si l'Information comporte une anomalie
-        */
+    /** Connecte une destination qui reçoit des informations Float 
+     * @param transmetteurLogique2 */
+   public void connecter(Transmetteur<Float,Boolean> transmetteurLogique) {
+    if (!destinationsConnectees.contains(transmetteurLogique)) {
+        destinationsConnectees.add((DestinationInterface<Float>) transmetteurLogique);
+    }
+   }
 
 
- 
-
-
-         
-         @Override
-         public void connecter(Emetteur emetteur) {
-            // TODO Auto-generated method stub
-            throw new UnsupportedOperationException("Unimplemented method 'connecter'");
-         }
-
-         @Override
-         public void connecterSonde(SondeLogique sondeSource) {
-            // TODO Auto-generated method stub
-            throw new UnsupportedOperationException("Unimplemented method 'connecterSonde'");
+    /** Connecte une sonde, qui doit aussi être DestinationInterface<Float> */
+    public void connecterSonde(DestinationInterface<Float> sonde) {
+        if (!destinationsConnectees.contains(sonde)) {
+            destinationsConnectees.add((DestinationInterface<Float>) sonde);
         }
+    }
 
-        
 
-        
+
 }
+
+
