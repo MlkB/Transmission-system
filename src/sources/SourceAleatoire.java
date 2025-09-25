@@ -1,8 +1,11 @@
 package sources;
 
 import java.util.Random;
+
+import emmetteurs.Emetteur;
 import information.Information;
-import information.InformationNonConformeException; 
+import information.InformationNonConformeException;
+import visualisations.SondeLogique; 
 
 public class SourceAleatoire extends Source {
 	
@@ -47,6 +50,18 @@ public class SourceAleatoire extends Source {
 			    
 			    this.informationGeneree = informationBinaire;
 			}
+		}
+
+		@Override
+		public void connecter(Emetteur emetteur) {
+			// TODO Auto-generated method stub
+			throw new UnsupportedOperationException("Unimplemented method 'connecter'");
+		}
+
+		@Override
+		public void connecterSonde(SondeLogique sondeSource) {
+			// TODO Auto-generated method stub
+			throw new UnsupportedOperationException("Unimplemented method 'connecterSonde'");
 		}
 		
 }

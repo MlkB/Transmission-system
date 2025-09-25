@@ -1,6 +1,7 @@
 package sources;
 
 import information.*;
+import visualisations.SondeLogique;
 import destinations.DestinationInterface;
 import java.util.*;
 
@@ -68,4 +69,6 @@ public  abstract class Source <T> implements  SourceInterface <T> {
 		}
 		this.informationEmise = informationGeneree;   			 			      
     }
+
+    public abstract void connecterSonde(SondeLogique sondeSource);
     }

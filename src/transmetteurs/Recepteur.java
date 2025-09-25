@@ -1,9 +1,9 @@
 package transmetteurs;
 
 import destinations.DestinationInterface;
+import emmetteurs.Emetteur;
 import information.Information;
 import information.InformationNonConformeException;
-
 public class Recepteur extends Transmetteur<Float, Boolean> implements DestinationInterface<Float> {
     
     private final int nbEch;
@@ -26,7 +26,7 @@ public class Recepteur extends Transmetteur<Float, Boolean> implements Destinati
     @Override
     public void recevoir(Information<Float> information) throws InformationNonConformeException {
         this.informationRecue = information;
-        emettre();
+       // emettre();
     }
 
     /*Conversion analogique(float) en logique(Boolean)*/
@@ -68,7 +68,11 @@ public class Recepteur extends Transmetteur<Float, Boolean> implements Destinati
     }
 
     @Override
-    public void connecter(DestinationInterface<Boolean> destination) {
-      
+    public void connecter(Emetteur emetteur) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'connecter'");
     }
+
+  
+   
 }

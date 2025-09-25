@@ -3,7 +3,6 @@ package visualisations;
 import java.util.Iterator;
 
 import destinations.DestinationInterface;
-import destinations.E;
 import information.Information;
 
 /** 

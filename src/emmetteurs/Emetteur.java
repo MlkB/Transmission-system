@@ -5,7 +5,10 @@ import destinations.DestinationInterface;
 import information.Information;
 import information.InformationNonConformeException;
 import sources.Source;
+import transmetteurs.Transmetteur;
+import visualisations.Sonde;
 import visualisations.SondeAnalogique;
+import visualisations.SondeLogique;
 
 public class Emetteur<T> extends Source<Float> implements  DestinationInterface <T>{        
     
@@ -74,17 +77,25 @@ public class Emetteur<T> extends Source<Float> implements  DestinationInterface 
                 return this.informationRecue;
           }
 
-          @Override
-          public void connecter(SondeAnalogique sondeTransmetteur) {
+          public void connecter(Transmetteur transmetteurLogique) {
                for (DestinationInterface<Float> destinationConnectee : destinationsConnectees) {
-                     if (destinationConnectee == sondeTransmetteur) {
+                     if (destinationConnectee == transmetteurLogique) {
                           return; // Déjà connecté
                       
-                     } else { destinationsConnectees.add(sondeTransmetteur);   }       
+                     } else { destinationsConnectees.add(transmetteurLogique);
               
-                }
-            }
+            }}}
+            public void connecterSonde(Sonde sonde) {
+               for (DestinationInterface<Float> destinationConnectee : destinationsConnectees) {
+                     if (destinationConnectee == sonde) {
+                          return; // Déjà connecté
+                      
+                     } else { destinationsConnectees.add(sonde);   }       
+              
+              }
+
     
+            }      
     /**
      * analyse les arguments passés en ligne de commande
      * et initialise les attributs du Simulateur en conséquence
@@ -100,9 +111,23 @@ public class Emetteur<T> extends Source<Float> implements  DestinationInterface 
         */
 
 
-
-     
-
  
 
-    }
+
+         
+         @Override
+         public void connecter(Emetteur emetteur) {
+            // TODO Auto-generated method stub
+            throw new UnsupportedOperationException("Unimplemented method 'connecter'");
+         }
+
+         @Override
+         public void connecterSonde(SondeLogique sondeSource) {
+            // TODO Auto-generated method stub
+            throw new UnsupportedOperationException("Unimplemented method 'connecterSonde'");
+        }
+
+        
+
+        
+}

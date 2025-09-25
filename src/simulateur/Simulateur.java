@@ -92,7 +92,7 @@ public class Simulateur {
     	
         SondeLogique sondeSource = new SondeLogique("source",100 );
         SondeAnalogique sondeEmetteur = new SondeAnalogique("récepteur");
-        SondeAnalogique sondeTransmetteur = new SondeAnalogique("transmetteur");
+        SondeAnalogique sonde = new SondeAnalogique("transmetteur");
         SondeLogique sondeRecepteur = new SondeLogique("dst", 100);
         transmetteurLogique = new TransmetteurParfait();
         emetteur = new Emetteur("NRZT", 2);
@@ -102,12 +102,11 @@ public class Simulateur {
         if (affichage) {
                    
             source.connecter(emetteur);
-            source.connecter(sondeSource);
-            emetteur.connecter(sondeEmetteur);
+            source.connecterSonde(sondeSource);
+            emetteur.connecterSonde(sondeEmetteur);
             emetteur.connecter(transmetteurLogique);
-            transmetteurLogique.connecter(sondeTransmetteur);
-            recepteur.connecter(transmetteurLogique);
-            recepteur.connecter(sondeRecepteur);
+            transmetteurLogique.connecterSonde(sonde);
+            recepteur.connecterSonde(sondeRecepteur);
             recepteur.connecter(destination);
         }
     }

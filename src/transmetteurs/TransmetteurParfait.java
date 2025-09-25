@@ -2,8 +2,10 @@ package transmetteurs;
 
 import java.util.Iterator;
 import destinations.DestinationInterface;
+import emmetteurs.Emetteur;
 import information.Information;
 import information.InformationNonConformeException;
+import visualisations.Sonde;
 import visualisations.SondeAnalogique;
 
 /**
@@ -53,17 +55,14 @@ public class TransmetteurParfait<E> extends Transmetteur<E,E> {
     public void connecter(DestinationInterface<E> destination) {
 		destinationsConnectees.add(destination);
 	}
+
     @Override
-      public void connecter(SondeAnalogique sondeTransmetteur) {
-        
-              for (DestinationInterface<E> destinationConnectee : destinationsConnectees) {
-                if (destinationConnectee == sondeTransmetteur) {
-                     return; // Déjà connecté
-      }
-                else { destinationsConnectees.add((DestinationInterface<E>) sondeTransmetteur);   }       
-         
-           }
-      }
+    public void connecter(Emetteur emetteur) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'connecter'");
+    }
+    
+      
 
 }
       
