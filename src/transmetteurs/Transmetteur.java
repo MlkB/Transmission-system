@@ -68,7 +68,7 @@ public abstract  class Transmetteur <R,E> implements  DestinationInterface <R>, 
      * connecte une destination à la sortie du transmetteur
      * @param destination  la destination à connecter
      */
-    public void connecter (Destination<Boolean> destination) {
+    public void connecter (DestinationInterface<E> destination) {
     	destinationsConnectees.add((DestinationInterface<E>) destination); 
     }
 
@@ -95,14 +95,5 @@ public abstract  class Transmetteur <R,E> implements  DestinationInterface <R>, 
     public  abstract void emettre() throws InformationNonConformeException;   
 
 
-    public void connecterSonde(Sonde sonde) {
-        
-              for (DestinationInterface<E> destinationConnectee : destinationsConnectees) {
-                if (destinationConnectee == sonde) {
-                     return; // Déjà connecté
-      }
-                else { destinationsConnectees.add((DestinationInterface<E>) sonde);   }       
-         
-           }
-      }
+    
 }

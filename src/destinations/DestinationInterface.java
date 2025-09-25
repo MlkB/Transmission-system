@@ -2,7 +2,6 @@ package destinations;
 
 import information.*;
 
-
 /** 
  * Interface d'un composant ayant le comportement d'une destination
  * d'informations dont les éléments sont de type T

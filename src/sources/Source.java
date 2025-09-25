@@ -36,6 +36,8 @@ public  abstract class Source <T> implements  SourceInterface <T> {
 		informationGeneree = null;
 		informationEmise = null;
     }
+
+    
     
     /**
      * retourne la dernière information émise par la source
@@ -70,5 +72,11 @@ public  abstract class Source <T> implements  SourceInterface <T> {
 		this.informationEmise = informationGeneree;   			 			      
     }
 
-    public abstract void connecterSonde(SondeLogique sondeSource);
+
+
+    public void connecter(DestinationInterface destination) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'connecter'");
     }
+
+}

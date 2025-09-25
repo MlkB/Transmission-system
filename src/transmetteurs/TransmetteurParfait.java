@@ -52,16 +52,6 @@ public class TransmetteurParfait<E> extends Transmetteur<E,E> {
      * permet de se connecter à une destination ou à un récepteur
      * @param destination  la destination à connecter
      */
-    public void connecter(DestinationInterface<E> destination) {
-		destinationsConnectees.add(destination);
-	}
-
-    @Override
-    public void connecter(Emetteur emetteur) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'connecter'");
-    }
-    
       
 
 }

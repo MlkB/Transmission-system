@@ -18,7 +18,7 @@ public class TestEmetteur {
         Emetteur<Boolean> emetteur = new Emetteur<>("NRZ", 1);
         TransmetteurParfait<Float> lien = new TransmetteurParfait<>();
 
-        Recepteur recepteur = new Recepteur(1, 0f);       // 1 échantillon/bit, seuil 0f
+        Recepteur recepteur = new Recepteur(1, 0f,"RZ");       // 1 échantillon/bit, seuil 0f
         DestinationFinale dest = new DestinationFinale();
 
         // Connexions

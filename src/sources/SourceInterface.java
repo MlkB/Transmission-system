@@ -2,6 +2,7 @@ package sources;
 
 import information.*;
 import visualisations.SondeAnalogique;
+import visualisations.SondeLogique;
 import destinations.DestinationInterface;
 import emmetteurs.Emetteur;
 
