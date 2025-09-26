@@ -59,12 +59,15 @@ public abstract  class Transmetteur <R,E> implements  DestinationInterface <R>, 
     	return this.informationEmise;
     }
 
+    public Information <Float>  getInformationAnalogEmise() {
+    	return (Information<Float>) this.informationEmise;
+    }
     /**
      * connecte une destination à la sortie du transmetteur
-     * @param destination  la destination à connecter
+     * @param recepteur  la destination à connecter
      */
-    public void connecter (DestinationInterface <E> destination) {
-    	destinationsConnectees.add(destination); 
+    public void connecter (Recepteur recepteur) {
+    	destinationsConnectees.add((DestinationInterface<E>) recepteur); 
     }
 
     /**

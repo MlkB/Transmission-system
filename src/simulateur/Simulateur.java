@@ -3,12 +3,17 @@ import destinations.Destination;
 import sources.Source;
 import sources.SourceAleatoire;
 import sources.SourceFixe;
-import transmetteurs.Transmetteur;
+import transmetteurs.*;
 import transmetteurs.TransmetteurParfait;
 import destinations.DestinationFinale;
 import information.Information;
 import information.InformationNonConformeException;
 import visualisations.SondeLogique;
+import visualisations.SondeAnalogique;
+
+
+import emmetteurs.Emetteur;
+
 
 
 /** La classe Simulateur permet de construire et simuler une chaîne de
@@ -47,6 +52,15 @@ public class Simulateur {
     
     /** le  composant Destination de la chaine de transmission */
     private Destination <Boolean>  destination = null;
+
+	/** la conversion numérique à analogique utilisée */
+	private String form = "RZ";
+
+	/** la conversion numérique à analogique utilisée */
+	private int nEch = 30;
+
+    private Emetteur emetteur = null;
+    private Recepteur recepteur = null;
    	
    
     /** Le constructeur de Simulateur construit une chaîne de
@@ -85,12 +99,20 @@ public class Simulateur {
     	
 
         transmetteurLogique = new TransmetteurParfait();
+		if (form != null) {
+			emetteur = new Emetteur(form, nEch);
+		} else {
+			emetteur = new Emetteur("NRZT", nEch); // default
+		}
+        recepteur = new Recepteur(nEch, 0f, form);
         destination = new DestinationFinale();
+
+
     	
-    	
-    	source.connecter(transmetteurLogique);
-    	transmetteurLogique.connecter(destination);
-      		
+    	source.connecter(emetteur);
+        emetteur.connecter(transmetteurLogique);
+    	transmetteurLogique.connecter(recepteur);
+        recepteur.connecter(destination);
     }
    
    
@@ -149,8 +171,27 @@ public class Simulateur {
     			else 
     				throw new ArgumentsException("Valeur du parametre -mess invalide : " + args[i]);
     		}
+
+			else if (args[i].matches("-form")) {
+				i++;
+				if (i < args.length) {
+					form = args[i];
+				} else {
+					throw new ArgumentsException("Valeur du parametre -form manquante");
+				}
+			}
+
+			else if (args[i].matches("-ne")) {
+				i++;
+				try {
+					nEch = Integer.valueOf(args[i]);
+				}
+				catch (Exception e) {
+					throw new ArgumentsException("Valeur du parametre -seed  invalide :" + args[i]);
+				}
+			}
+
     		
-    		//TODO : ajouter ci-après le traitement des nouvelles options
 
     		else throw new ArgumentsException("Option invalide :"+ args[i]);
     	}
@@ -168,10 +209,12 @@ public class Simulateur {
     public void execute() throws Exception {    
     	
     	source.emettre();
-    	
-    	transmetteurLogique.emettre();
-    	
-    	System.out.println(destination.getInformationRecue());;
+        emetteur.recevoir(source.getInformationEmise());
+        transmetteurLogique.emettre();
+        recepteur.recevoir(transmetteurLogique.getInformationAnalogEmise());
+        destination.recevoir(recepteur.getInformationEmise());
+    
+        System.out.println(destination.getInformationRecue());;
       	     	      
     }
    
@@ -185,14 +228,18 @@ public class Simulateur {
     public float  calculTauxErreurBinaire() {
     	Information<Boolean> infoEmise = source.getInformationEmise();
     	Information<Boolean> infoRecue = destination.getInformationRecue();
-    	
-    	int error = 0;
-    	for (int i = 0; i<nbBitsMess; i++) {
-    		if (infoEmise.iemeElement(i) != infoRecue.iemeElement(i)) error++;
-    	}
-    	int taux = (error)/nbBitsMess;
-    	return  taux;
-    }
+
+		int size = Math.min(infoEmise.nbElements(), infoRecue.nbElements());
+		int error = 0;
+		for (int i = 0; i < size; i++) {
+			if (!infoEmise.iemeElement(i).equals(infoRecue.iemeElement(i))) {
+				error++;
+			}
+		}
+		return (float) error / size;
+	}
+
+
    
    
    
