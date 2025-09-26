@@ -1,7 +1,10 @@
 package sources;
 
 import information.*;
+import visualisations.SondeAnalogique;
+import visualisations.SondeLogique;
 import destinations.DestinationInterface;
+import emmetteurs.Emetteur;
 
 /** 
  * Interface d'un composant ayant le comportement d'une source
@@ -18,9 +21,9 @@ public interface SourceInterface <T>  {
    
     /**
      * pour connecter une destination à la source
-     * @param destination  la destination à connecter
+     * @param emetteur  la destination à connecter
      */
-    public void connecter (DestinationInterface <T> destination);
+    public void connecter (Emetteur emetteur);
    
     /**
      * pour émettre l'information contenue dans une source

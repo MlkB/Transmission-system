@@ -2,8 +2,11 @@ package transmetteurs;
 
 import java.util.Iterator;
 import destinations.DestinationInterface;
+import emmetteurs.Emetteur;
 import information.Information;
 import information.InformationNonConformeException;
+import visualisations.Sonde;
+import visualisations.SondeAnalogique;
 
 /**
  * classe représentant un transmetteur parfait dans la chaîne de transmission
@@ -49,10 +52,9 @@ public class TransmetteurParfait<E> extends Transmetteur<E,E> {
      * permet de se connecter à une destination ou à un récepteur
      * @param destination  la destination à connecter
      */
-    @Override
-	public void connecter(DestinationInterface<E> destination) {
-		destinationsConnectees.add(destination);
-	}
-
+      
 
 }
+      
+   
+   

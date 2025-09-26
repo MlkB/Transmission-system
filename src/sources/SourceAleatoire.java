@@ -1,8 +1,12 @@
 package sources;
 
 import java.util.Random;
+
+import destinations.DestinationInterface;
+import emmetteurs.Emetteur;
 import information.Information;
 import information.InformationNonConformeException;
+
 
 /**
  * Classe d'un composant représentant la source aléatoire d'une chaîne de transmission
@@ -65,5 +69,13 @@ public class SourceAleatoire extends Source {
 			    this.informationGeneree = informationBinaire;
 			}
 		}
+
+	@Override
+	public void connecter(DestinationInterface destination) {
+		destinationsConnectees.add(destination);
+		
+	}
+
+		
 		
 }

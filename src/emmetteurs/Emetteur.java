@@ -1,16 +1,15 @@
 package emmetteurs;
 
 import destinations.DestinationInterface;
+
 import information.Information;
 import information.InformationNonConformeException;
 import sources.Source;
+import transmetteurs.Transmetteur;
+import visualisations.Sonde;
+import visualisations.SondeAnalogique;
+import visualisations.SondeLogique;
 
-/**
- * Classe Emetteur représentant un objet de la chaîne de transmission
- * qui reçoit l'information booléenne de la source et la transforme
- * en information analogique
- * @param <T>
- */
 public class Emetteur<T> extends Source<Float> implements  DestinationInterface <T>{        
     
     private Information<Boolean> informationRecue;
@@ -117,9 +116,15 @@ public class Emetteur<T> extends Source<Float> implements  DestinationInterface 
       }
 
 
-
-    }
-    
+    public void connecter(Transmetteur transmetteurLogique) {
+               for (DestinationInterface<Float> destinationConnectee : destinationsConnectees) {
+                     if (destinationConnectee == transmetteurLogique) {
+                          return; // Déjà connecté
+                      
+                     } else { destinationsConnectees.add(transmetteurLogique);
+              
+    }}}
+             
     /**
      * analyse les arguments passés en ligne de commande
      * et initialise les attributs du Simulateur en conséquence
@@ -133,3 +138,36 @@ public class Emetteur<T> extends Source<Float> implements  DestinationInterface 
     
         * @throws InformationNonConformeException si l'Information comporte une anomalie
         */
+
+
+ 
+
+
+         
+         @Override
+         public void connecter(Emetteur emetteur) {
+          
+            throw new UnsupportedOperationException("Unimplemented method 'connecter'");
+         }
+
+
+         public void connecterSonde(Sonde sonde) {
+            
+               for (DestinationInterface<Float> destinationConnectee : destinationsConnectees) {
+                     if (destinationConnectee == sonde) {
+                          return; // Déjà connecté
+                      
+                     } else { destinationsConnectees.add(sonde);   }       
+              
+              }
+
+    
+            }
+
+        
+       
+    }
+
+        
+
+        

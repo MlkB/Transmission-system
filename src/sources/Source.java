@@ -1,6 +1,7 @@
 package sources;
 
 import information.*;
+import visualisations.SondeLogique;
 import destinations.DestinationInterface;
 import java.util.*;
 
@@ -35,6 +36,8 @@ public  abstract class Source <T> implements  SourceInterface <T> {
 		informationGeneree = null;
 		informationEmise = null;
     }
+
+    
     
     /**
      * retourne la dernière information émise par la source
@@ -48,10 +51,7 @@ public  abstract class Source <T> implements  SourceInterface <T> {
      * connecte une destination à la source
      * @param destination  la destination à connecter
      */
-    public void connecter (DestinationInterface <T> destination) {
-    	destinationsConnectees.add(destination); 
-    }
-   
+
     /**
      * déconnecte une destination de la source
      * @param destination  la destination à déconnecter
@@ -71,4 +71,12 @@ public  abstract class Source <T> implements  SourceInterface <T> {
 		}
 		this.informationEmise = informationGeneree;   			 			      
     }
+
+
+
+    public void connecter(DestinationInterface destination) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'connecter'");
+    }
+
 }

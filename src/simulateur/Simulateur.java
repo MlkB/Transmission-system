@@ -4,7 +4,6 @@ import sources.Source;
 import sources.SourceAleatoire;
 import sources.SourceFixe;
 import transmetteurs.*;
-import transmetteurs.TransmetteurParfait;
 import destinations.DestinationFinale;
 import information.Information;
 import information.InformationNonConformeException;
@@ -48,16 +47,28 @@ public class Simulateur {
     private Source <Boolean>  source = null;
     
     /** le  composant Transmetteur parfait logique de la chaine de transmission */
-    private Transmetteur <Boolean, Boolean>  transmetteurLogique = null;
+    private Transmetteur <Boolean, Float>  transmetteurLogique = null;
     
     /** le  composant Destination de la chaine de transmission */
     private Destination <Boolean>  destination = null;
 
+    @SuppressWarnings("unused")
+    private int nEchantillon = 30;
+
 	/** la conversion numérique à analogique utilisée */
 	private String form = "RZ";
 
-	/** la conversion numérique à analogique utilisée */
+	/** le nombre d'échantilllons utilisés */
 	private int nEch = 30;
+
+    /** le rapport signal sur bruit SNR utilisé en décibel */
+	private Float SNRpB;
+
+    /** signal bruité par graine*/
+    private Boolean bruitSeeded;
+
+    /** graine du bruit */
+    private int bruitSeed;
 
     private Emetteur emetteur = null;
     private Recepteur recepteur = null;
@@ -97,8 +108,17 @@ public class Simulateur {
             source = SF;
         }
     	
-
-        transmetteurLogique = new TransmetteurParfait();
+        if (SNRpB == null) {
+            transmetteurLogique = new TransmetteurParfait();
+        }
+        else {
+            if (bruitSeeded) {
+                transmetteurLogique = new TransmetteurImparfait<>(nEch, SNRpB,seed);
+            }
+            else {
+                transmetteurLogique = new TransmetteurImparfait<>(nEch, SNRpB);
+            }
+        }
 		if (form != null) {
 			emetteur = new Emetteur(form, nEch);
 		} else {
@@ -107,12 +127,27 @@ public class Simulateur {
         recepteur = new Recepteur(nEch, 0f, form);
         destination = new DestinationFinale();
 
+        SondeLogique sondeSource = new SondeLogique("source",100 );
+        SondeAnalogique sondeEmetteur = new SondeAnalogique("récepteur");
+        SondeAnalogique sondeTransmetteur = new SondeAnalogique("transmetteur");
+        SondeLogique sondeRecepteur = new SondeLogique("dst", 100);
+        transmetteurLogique = new TransmetteurParfait();
+        emetteur = new Emetteur("NRZT", 2);
+        recepteur = new Recepteur(2, 0f, form);
+        destination = new DestinationFinale();
 
-    	
-    	source.connecter(emetteur);
+        source.connecter(emetteur);
         emetteur.connecter(transmetteurLogique);
-    	transmetteurLogique.connecter(recepteur);
+        recepteur.connecter(transmetteurLogique);
         recepteur.connecter(destination);
+        
+        if (affichage) {
+
+            source.connecter(sondeSource);
+            emetteur.connecterSonde(sondeEmetteur);
+            transmetteurLogique.connecter(sondeTransmetteur);
+            recepteur.connecter(sondeRecepteur);
+        }
     }
    
    
@@ -191,7 +226,27 @@ public class Simulateur {
 				}
 			}
 
-    		
+            else if (args[i].matches("-snrpb")) {
+				i++;
+				try {
+					SNRpB = Float.valueOf(args[i]);
+				}
+				catch (Exception e) {
+					throw new ArgumentsException("Valeur du parametre -seed  invalide :" + args[i]);
+				}
+			}
+
+    		else if (args[i].matches("-seedBruit")) {
+                bruitSeeded = true;
+                i++; 
+                try { 
+                    bruitSeed = Integer.valueOf(args[i]);
+                } catch (Exception e) {
+                    throw new ArgumentsException("Valeur du parametre -seedBruit invalide :" + args[i]);
+                }           		
+}
+
+
 
     		else throw new ArgumentsException("Option invalide :"+ args[i]);
     	}
