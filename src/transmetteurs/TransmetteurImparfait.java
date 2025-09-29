@@ -40,7 +40,6 @@ public class TransmetteurImparfait<E> extends Transmetteur {
 
     @Override
     public void connecter(DestinationInterface destination) {
-
 		destinationsConnectees.add(destination);
     }
 

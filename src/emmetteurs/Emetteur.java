@@ -117,13 +117,11 @@ public class Emetteur<T> extends Source<Float> implements  DestinationInterface 
 
 
     public void connecter(Transmetteur transmetteurLogique) {
-               for (DestinationInterface<Float> destinationConnectee : destinationsConnectees) {
-                     if (destinationConnectee == transmetteurLogique) {
-                          return; // Déjà connecté
-                      
-                     } else { destinationsConnectees.add(transmetteurLogique);
-              
-    }}}
+        // Vérifier si déjà connecté
+        if (!destinationsConnectees.contains(transmetteurLogique)) {
+            destinationsConnectees.add(transmetteurLogique);
+        }
+    }
              
     /**
      * analyse les arguments passés en ligne de commande

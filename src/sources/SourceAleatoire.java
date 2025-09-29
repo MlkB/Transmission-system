@@ -73,9 +73,10 @@ public class SourceAleatoire extends Source {
 	@Override
 	public void connecter(DestinationInterface destination) {
 		destinationsConnectees.add(destination);
-		
 	}
 
-		
-		
+	@Override
+	public void connecter(Emetteur emetteur) {
+		destinationsConnectees.add(emetteur);
+	}
 }

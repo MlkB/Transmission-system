@@ -53,9 +53,6 @@ public class Simulateur {
     /** le  composant Destination de la chaine de transmission */
     private Destination <Boolean>  destination = null;
 
-    @SuppressWarnings("unused")
-    private int nEchantillon = 30;
-
 	/** la conversion numérique à analogique utilisée */
 	private String form = "RZ";
 
@@ -64,12 +61,6 @@ public class Simulateur {
 
     /** le rapport signal sur bruit SNR utilisé en décibel */
 	private Float SNRpB;
-
-    /** signal bruité par graine*/
-    private Boolean bruitSeeded;
-
-    /** graine du bruit */
-    private int bruitSeed;
 
     /** Paramètres du canal à trajets multiples */
     private List<Trajet> trajetsMultiples = null;
@@ -118,10 +109,10 @@ public class Simulateur {
             if (SNRpB == null) {
                 throw new ArgumentsException("Un SNR doit être spécifié avec -snrpb pour utiliser -ti");
             }
-            if (bruitSeeded) {
-                transmetteurLogique = new TransmetteurMultiTrajet<>(trajetsMultiples, SNRpB, seed);
+            if (aleatoireAvecGerme && seed != null) {
+                transmetteurLogique = new TransmetteurMultiTrajet<>(trajetsMultiples, SNRpB, nEch, seed);
             } else {
-                transmetteurLogique = new TransmetteurMultiTrajet<>(trajetsMultiples, SNRpB);
+                transmetteurLogique = new TransmetteurMultiTrajet<>(trajetsMultiples, SNRpB, nEch);
             }
         }
         else if (SNRpB == null) {
@@ -130,18 +121,16 @@ public class Simulateur {
         }
         else {
             // Canal simple avec bruit uniquement
-            if (bruitSeeded) {
+            if (aleatoireAvecGerme && seed != null) {
                 transmetteurLogique = new TransmetteurImparfait<>(nEch, SNRpB, seed);
             }
             else {
                 transmetteurLogique = new TransmetteurImparfait<>(nEch, SNRpB);
             }
         }
-		if (form != null) {
-			emetteur = new Emetteur(form, nEch);
-		} else {
-			emetteur = new Emetteur("NRZT", nEch); // default
-		}
+
+        // Créer émetteur et récepteur (toujours nécessaires pour la transmission analogique)
+		emetteur = new Emetteur(form, nEch);
         recepteur = new Recepteur(nEch, 0f, form);
         destination = new DestinationFinale();
 
@@ -230,13 +219,13 @@ public class Simulateur {
 				}
 			}
 
-			else if (args[i].matches("-ne")) {
+			else if (args[i].matches("-nbEch")) {
 				i++;
 				try {
 					nEch = Integer.valueOf(args[i]);
 				}
 				catch (Exception e) {
-					throw new ArgumentsException("Valeur du parametre -seed  invalide :" + args[i]);
+					throw new ArgumentsException("Valeur du parametre -nbEch invalide :" + args[i]);
 				}
 			}
 
@@ -246,19 +235,9 @@ public class Simulateur {
 					SNRpB = Float.valueOf(args[i]);
 				}
 				catch (Exception e) {
-					throw new ArgumentsException("Valeur du parametre -seed  invalide :" + args[i]);
+					throw new ArgumentsException("Valeur du parametre -snrpb invalide :" + args[i]);
 				}
 			}
-
-    		else if (args[i].matches("-seedBruit")) {
-                bruitSeeded = true;
-                i++;
-                try {
-                    bruitSeed = Integer.valueOf(args[i]);
-                } catch (Exception e) {
-                    throw new ArgumentsException("Valeur du parametre -seedBruit invalide :" + args[i]);
-                }
-}
 
 			else if (args[i].matches("-ti")) {
 				// Trajets multiples : lire les couples (dt, ar) jusqu'à 5 max
@@ -299,16 +278,30 @@ public class Simulateur {
      * @throws Exception si un problème survient lors de l'exécution
      *
      */ 
-    public void execute() throws Exception {    
-    	
+    public void execute() throws Exception {
+
     	source.emettre();
+		System.err.println("DEBUG: Source a émis " + source.getInformationEmise().nbElements() + " bits");
+		System.err.println("DEBUG: Premiers bits source: " + source.getInformationEmise().iemeElement(0) + " " + source.getInformationEmise().iemeElement(1) + " " + source.getInformationEmise().iemeElement(2));
+
         emetteur.recevoir(source.getInformationEmise());
+		System.err.println("DEBUG: Emetteur a généré " + emetteur.getInformationEmise().nbElements() + " échantillons");
+
+        // emetteur émet automatiquement vers transmetteur dans recevoir()
         transmetteurLogique.emettre();
+		System.err.println("DEBUG: Transmetteur a émis " + transmetteurLogique.getInformationEmise().nbElements() + " échantillons");
+
+        // transmetteur émet vers recepteur
+		System.err.println("DEBUG: Signal transmetteur premiers échantillons: " + transmetteurLogique.getInformationAnalogEmise().iemeElement(0) + " " + transmetteurLogique.getInformationAnalogEmise().iemeElement(1) + " " + transmetteurLogique.getInformationAnalogEmise().iemeElement(2));
+		System.err.println("DEBUG: Signal emetteur premiers échantillons: " + emetteur.getInformationEmise().iemeElement(0) + " " + emetteur.getInformationEmise().iemeElement(1) + " " + emetteur.getInformationEmise().iemeElement(2));
         recepteur.recevoir(transmetteurLogique.getInformationAnalogEmise());
-        destination.recevoir(recepteur.getInformationEmise());
-    
-        System.out.println(destination.getInformationRecue());;
-      	     	      
+        recepteur.emettre();
+		System.err.println("DEBUG: Recepteur a émis " + recepteur.getInformationEmise().nbElements() + " bits");
+		System.err.println("DEBUG: Premiers bits recepteur: " + recepteur.getInformationEmise().iemeElement(0) + " " + recepteur.getInformationEmise().iemeElement(1) + " " + recepteur.getInformationEmise().iemeElement(2));
+        // recepteur émet vers destination
+
+        System.out.println(destination.getInformationRecue());
+
     }
    
    	   	
@@ -324,11 +317,23 @@ public class Simulateur {
 
 		int size = Math.min(infoEmise.nbElements(), infoRecue.nbElements());
 		int error = 0;
+
+		// Debug
+		System.err.println("DEBUG: Taille émise = " + infoEmise.nbElements());
+		System.err.println("DEBUG: Taille reçue = " + infoRecue.nbElements());
+		System.err.println("DEBUG: Comparaison sur " + size + " bits");
+
 		for (int i = 0; i < size; i++) {
-			if (!infoEmise.iemeElement(i).equals(infoRecue.iemeElement(i))) {
+			Boolean emis = infoEmise.iemeElement(i);
+			Boolean recu = infoRecue.iemeElement(i);
+			if (!emis.equals(recu)) {
 				error++;
+				if (error <= 5) { // Afficher les 5 premières erreurs
+					System.err.println("DEBUG: Erreur bit " + i + " : émis=" + emis + " reçu=" + recu);
+				}
 			}
 		}
+		System.err.println("DEBUG: Nombre d'erreurs = " + error);
 		return (float) error / size;
 	}
 

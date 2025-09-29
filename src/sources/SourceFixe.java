@@ -34,14 +34,11 @@ public class SourceFixe extends Source {
 
 	@Override
 	public void connecter(Emetteur emetteur) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'connecter'");
+		destinationsConnectees.add(emetteur);
 	}
 
-	@Override
 	public void connecterSonde(SondeLogique sondeSource) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'connecterSonde'");
+		destinationsConnectees.add(sondeSource);
 	}
 
 }

@@ -3,12 +3,12 @@ package visualisations;
 import destinations.DestinationInterface;
 import information.Information;
 
-/** 
+/**
  * Classe réalisant l'affichage d'information composée d'éléments
  * booléens
  * @author prou
  */
-public class SondeLogique extends Sonde <Boolean> implements DestinationInterface<Float> {
+public class SondeLogique extends Sonde <Boolean> {
    
     /** le nombre de pixels en largeur pour un élément d'information
      * Boolean à afficher dans la fenêtre */

@@ -33,6 +33,11 @@ public class TransmetteurParfait<E> extends Transmetteur<E,E> {
 
     }
 
+    @Override
+    public void connecter(Emetteur emetteur) {
+
+    }
+
     /**
      * permet d'envoyer l'information reçue à une destination finale
      * ou à un récepteur

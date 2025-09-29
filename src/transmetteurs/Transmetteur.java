@@ -69,7 +69,16 @@ public abstract  class Transmetteur <R,E> implements  DestinationInterface <R>, 
      * @param destination  la destination à connecter
      */
     public void connecter (DestinationInterface<E> destination) {
-    	destinationsConnectees.add((DestinationInterface<E>) destination); 
+    	destinationsConnectees.add((DestinationInterface<E>) destination);
+    }
+
+    /**
+     * connecte un émetteur (requis par SourceInterface, non utilisé pour un transmetteur)
+     * @param emetteur  l'émetteur à connecter
+     */
+    public void connecter (emmetteurs.Emetteur emetteur) {
+    	// Un transmetteur ne se connecte pas à un émetteur
+    	// Cette méthode est requise par SourceInterface mais n'est pas utilisée
     }
 
     /**
@@ -77,7 +86,7 @@ public abstract  class Transmetteur <R,E> implements  DestinationInterface <R>, 
      * @param destination  la destination à déconnecter
      */
     public void deconnecter (DestinationInterface <E> destination) {
-    	destinationsConnectees.remove(destination); 
+    	destinationsConnectees.remove(destination);
     }
    	    
     /**
