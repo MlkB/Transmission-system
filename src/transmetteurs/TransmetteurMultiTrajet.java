@@ -24,34 +24,47 @@ public class TransmetteurMultiTrajet<E> extends Transmetteur {
     private float puissanceSignal;           // puissance du signal
     private float variance;                  // variance du bruit gaussien
     private Random rand;                     // générateur aléatoire
+    private int nbEch;                       // nombre d'échantillons par bit
 
     /**
      * Constructeur avec liste de trajets (bruit totalement aléatoire)
-     * @param trajets la liste des trajets réfléchis
+     * @param trajets la liste des trajets réfléchis (dt en nombre de bits)
      * @param SNRdB le rapport signal/bruit en dB
+     * @param nbEch le nombre d'échantillons par bit
      */
-    public TransmetteurMultiTrajet(List<Trajet> trajets, float SNRdB) {
+    public TransmetteurMultiTrajet(List<Trajet> trajets, float SNRdB, int nbEch) {
         super();
         if (trajets == null || trajets.isEmpty()) {
             throw new IllegalArgumentException("La liste de trajets ne peut pas être vide");
         }
-        this.trajets = new ArrayList<>(trajets);
+        this.nbEch = nbEch;
+        // Convertir les retards dt (en bits) en échantillons (dt × nbEch)
+        this.trajets = new ArrayList<>();
+        for (Trajet t : trajets) {
+            this.trajets.add(new Trajet(t.getTau() * nbEch, t.getAlpha()));
+        }
         this.SNRdB = SNRdB;
         this.rand = new Random(); // aléatoire total
     }
 
     /**
      * Constructeur avec liste de trajets et seed (bruit reproductible)
-     * @param trajets la liste des trajets réfléchis
+     * @param trajets la liste des trajets réfléchis (dt en nombre de bits)
      * @param SNRdB le rapport signal/bruit en dB
+     * @param nbEch le nombre d'échantillons par bit
      * @param seed la graine pour le générateur aléatoire
      */
-    public TransmetteurMultiTrajet(List<Trajet> trajets, float SNRdB, int seed) {
+    public TransmetteurMultiTrajet(List<Trajet> trajets, float SNRdB, int nbEch, int seed) {
         super();
         if (trajets == null || trajets.isEmpty()) {
             throw new IllegalArgumentException("La liste de trajets ne peut pas être vide");
         }
-        this.trajets = new ArrayList<>(trajets);
+        this.nbEch = nbEch;
+        // Convertir les retards dt (en bits) en échantillons (dt × nbEch)
+        this.trajets = new ArrayList<>();
+        for (Trajet t : trajets) {
+            this.trajets.add(new Trajet(t.getTau() * nbEch, t.getAlpha()));
+        }
         this.SNRdB = SNRdB;
         this.rand = new Random(seed); // reproductible
     }
@@ -129,11 +142,6 @@ public class TransmetteurMultiTrajet<E> extends Transmetteur {
             // Ajout du signal total à l'information émise
             this.informationEmise.add(signalTotal);
         }
-    }
-
-    @Override
-    public void connecter(Emetteur emetteur) {
-
     }
 
     /**
