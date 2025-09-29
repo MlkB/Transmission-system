@@ -3,12 +3,16 @@ import destinations.Destination;
 import sources.Source;
 import sources.SourceAleatoire;
 import sources.SourceFixe;
-import transmetteurs.Transmetteur;
-import transmetteurs.TransmetteurParfait;
+import transmetteurs.*;
 import destinations.DestinationFinale;
 import information.Information;
 import information.InformationNonConformeException;
 import visualisations.SondeLogique;
+import visualisations.SondeAnalogique;
+
+
+import emmetteurs.Emetteur;
+
 
 
 /** La classe Simulateur permet de construire et simuler une chaîne de
@@ -43,10 +47,31 @@ public class Simulateur {
     private Source <Boolean>  source = null;
     
     /** le  composant Transmetteur parfait logique de la chaine de transmission */
-    private Transmetteur <Boolean, Boolean>  transmetteurLogique = null;
+    private Transmetteur <Boolean, Float>  transmetteurLogique = null;
     
     /** le  composant Destination de la chaine de transmission */
     private Destination <Boolean>  destination = null;
+
+    @SuppressWarnings("unused")
+    private int nEchantillon = 30;
+
+	/** la conversion numérique à analogique utilisée */
+	private String form = "RZ";
+
+	/** le nombre d'échantilllons utilisés */
+	private int nEch = 30;
+
+    /** le rapport signal sur bruit SNR utilisé en décibel */
+	private Float SNRpB;
+
+    /** signal bruité par graine*/
+    private Boolean bruitSeeded;
+
+    /** graine du bruit */
+    private int bruitSeed;
+
+    private Emetteur emetteur = null;
+    private Recepteur recepteur = null;
    	
    
     /** Le constructeur de Simulateur construit une chaîne de
@@ -83,14 +108,46 @@ public class Simulateur {
             source = SF;
         }
     	
-
-        transmetteurLogique = new TransmetteurParfait();
+        if (SNRpB == null) {
+            transmetteurLogique = new TransmetteurParfait();
+        }
+        else {
+            if (bruitSeeded) {
+                transmetteurLogique = new TransmetteurImparfait<>(nEch, SNRpB,seed);
+            }
+            else {
+                transmetteurLogique = new TransmetteurImparfait<>(nEch, SNRpB);
+            }
+        }
+		if (form != null) {
+			emetteur = new Emetteur(form, nEch);
+		} else {
+			emetteur = new Emetteur("NRZT", nEch); // default
+		}
+        recepteur = new Recepteur(nEch, 0f, form);
         destination = new DestinationFinale();
-    	
-    	
-    	source.connecter(transmetteurLogique);
-    	transmetteurLogique.connecter(destination);
-      		
+
+        SondeLogique sondeSource = new SondeLogique("source",100 );
+        SondeAnalogique sondeEmetteur = new SondeAnalogique("récepteur");
+        SondeAnalogique sondeTransmetteur = new SondeAnalogique("transmetteur");
+        SondeLogique sondeRecepteur = new SondeLogique("dst", 100);
+        transmetteurLogique = new TransmetteurParfait();
+        emetteur = new Emetteur("NRZT", 2);
+        recepteur = new Recepteur(2, 0f, form);
+        destination = new DestinationFinale();
+
+        source.connecter(emetteur);
+        emetteur.connecter(transmetteurLogique);
+        recepteur.connecter(transmetteurLogique);
+        recepteur.connecter(destination);
+        
+        if (affichage) {
+
+            source.connecter(sondeSource);
+            emetteur.connecterSonde(sondeEmetteur);
+            transmetteurLogique.connecter(sondeTransmetteur);
+            recepteur.connecter(sondeRecepteur);
+        }
     }
    
    
@@ -149,8 +206,47 @@ public class Simulateur {
     			else 
     				throw new ArgumentsException("Valeur du parametre -mess invalide : " + args[i]);
     		}
-    		
-    		//TODO : ajouter ci-après le traitement des nouvelles options
+
+			else if (args[i].matches("-form")) {
+				i++;
+				if (i < args.length) {
+					form = args[i];
+				} else {
+					throw new ArgumentsException("Valeur du parametre -form manquante");
+				}
+			}
+
+			else if (args[i].matches("-ne")) {
+				i++;
+				try {
+					nEch = Integer.valueOf(args[i]);
+				}
+				catch (Exception e) {
+					throw new ArgumentsException("Valeur du parametre -seed  invalide :" + args[i]);
+				}
+			}
+
+            else if (args[i].matches("-snrpb")) {
+				i++;
+				try {
+					SNRpB = Float.valueOf(args[i]);
+				}
+				catch (Exception e) {
+					throw new ArgumentsException("Valeur du parametre -seed  invalide :" + args[i]);
+				}
+			}
+
+    		else if (args[i].matches("-seedBruit")) {
+                bruitSeeded = true;
+                i++; 
+                try { 
+                    bruitSeed = Integer.valueOf(args[i]);
+                } catch (Exception e) {
+                    throw new ArgumentsException("Valeur du parametre -seedBruit invalide :" + args[i]);
+                }           		
+}
+
+
 
     		else throw new ArgumentsException("Option invalide :"+ args[i]);
     	}
@@ -168,10 +264,12 @@ public class Simulateur {
     public void execute() throws Exception {    
     	
     	source.emettre();
-    	
-    	transmetteurLogique.emettre();
-    	
-    	System.out.println(destination.getInformationRecue());;
+        emetteur.recevoir(source.getInformationEmise());
+        transmetteurLogique.emettre();
+        recepteur.recevoir(transmetteurLogique.getInformationAnalogEmise());
+        destination.recevoir(recepteur.getInformationEmise());
+    
+        System.out.println(destination.getInformationRecue());;
       	     	      
     }
    
@@ -185,14 +283,18 @@ public class Simulateur {
     public float  calculTauxErreurBinaire() {
     	Information<Boolean> infoEmise = source.getInformationEmise();
     	Information<Boolean> infoRecue = destination.getInformationRecue();
-    	
-    	int error = 0;
-    	for (int i = 0; i<nbBitsMess; i++) {
-    		if (infoEmise.iemeElement(i) != infoRecue.iemeElement(i)) error++;
-    	}
-    	int taux = (error)/nbBitsMess;
-    	return  taux;
-    }
+
+		int size = Math.min(infoEmise.nbElements(), infoRecue.nbElements());
+		int error = 0;
+		for (int i = 0; i < size; i++) {
+			if (!infoEmise.iemeElement(i).equals(infoRecue.iemeElement(i))) {
+				error++;
+			}
+		}
+		return (float) error / size;
+	}
+
+
    
    
    

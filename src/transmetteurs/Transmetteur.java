@@ -1,6 +1,8 @@
 package transmetteurs;
 
 import sources.*;
+import visualisations.Sonde;
+import visualisations.SondeAnalogique;
 import destinations.*;
 import information.*;
 
@@ -59,12 +61,15 @@ public abstract  class Transmetteur <R,E> implements  DestinationInterface <R>, 
     	return this.informationEmise;
     }
 
+    public Information <Float>  getInformationAnalogEmise() {
+    	return (Information<Float>) this.informationEmise;
+    }
     /**
      * connecte une destination à la sortie du transmetteur
      * @param destination  la destination à connecter
      */
-    public void connecter (DestinationInterface <E> destination) {
-    	destinationsConnectees.add(destination); 
+    public void connecter (DestinationInterface<E> destination) {
+    	destinationsConnectees.add((DestinationInterface<E>) destination); 
     }
 
     /**
@@ -88,4 +93,7 @@ public abstract  class Transmetteur <R,E> implements  DestinationInterface <R>, 
      * @throws InformationNonConformeException si l'Information comporte une anomalie
      */
     public  abstract void emettre() throws InformationNonConformeException;   
+
+
+    
 }

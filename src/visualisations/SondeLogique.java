@@ -1,5 +1,6 @@
 package visualisations;
 	
+import destinations.DestinationInterface;
 import information.Information;
 
 /** 
@@ -7,7 +8,7 @@ import information.Information;
  * booléens
  * @author prou
  */
-public class SondeLogique extends Sonde <Boolean> {
+public class SondeLogique extends Sonde <Boolean> implements DestinationInterface<Float> {
    
     /** le nombre de pixels en largeur pour un élément d'information
      * Boolean à afficher dans la fenêtre */
@@ -19,8 +20,8 @@ public class SondeLogique extends Sonde <Boolean> {
      * @param nbPixels  le nombre pixels en largeur pour un élément d'information Boolean à afficher dans la fenêtre
      */
     public SondeLogique(String nom, int nbPixels) {
-	super(nom);
-	this.nbPixels = nbPixels;
+        super(nom);
+        this.nbPixels = nbPixels;
     }
     
     public void recevoir (Information <Boolean> information) { 
