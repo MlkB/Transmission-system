@@ -10,7 +10,8 @@ import information.InformationNonConformeException;
 import visualisations.SondeLogique;
 import visualisations.SondeAnalogique;
 
-
+import java.util.ArrayList;
+import java.util.List;
 import emmetteurs.Emetteur;
 
 
@@ -70,6 +71,9 @@ public class Simulateur {
     /** graine du bruit */
     private int bruitSeed;
 
+    /** Paramètres du canal à trajets multiples */
+    private List<Trajet> trajetsMultiples = null;
+
     private Emetteur emetteur = null;
     private Recepteur recepteur = null;
    	
@@ -108,12 +112,26 @@ public class Simulateur {
             source = SF;
         }
     	
-        if (SNRpB == null) {
+        // Création du transmetteur selon les options
+        if (trajetsMultiples != null && !trajetsMultiples.isEmpty()) {
+            // Canal à trajets multiples et bruité
+            if (SNRpB == null) {
+                throw new ArgumentsException("Un SNR doit être spécifié avec -snrpb pour utiliser -ti");
+            }
+            if (bruitSeeded) {
+                transmetteurLogique = new TransmetteurMultiTrajet<>(trajetsMultiples, SNRpB, seed);
+            } else {
+                transmetteurLogique = new TransmetteurMultiTrajet<>(trajetsMultiples, SNRpB);
+            }
+        }
+        else if (SNRpB == null) {
+            // Canal parfait (pas de bruit)
             transmetteurLogique = new TransmetteurParfait();
         }
         else {
+            // Canal simple avec bruit uniquement
             if (bruitSeeded) {
-                transmetteurLogique = new TransmetteurImparfait<>(nEch, SNRpB,seed);
+                transmetteurLogique = new TransmetteurImparfait<>(nEch, SNRpB, seed);
             }
             else {
                 transmetteurLogique = new TransmetteurImparfait<>(nEch, SNRpB);
@@ -131,14 +149,10 @@ public class Simulateur {
         SondeAnalogique sondeEmetteur = new SondeAnalogique("récepteur");
         SondeAnalogique sondeTransmetteur = new SondeAnalogique("transmetteur");
         SondeLogique sondeRecepteur = new SondeLogique("dst", 100);
-        transmetteurLogique = new TransmetteurParfait();
-        emetteur = new Emetteur("NRZT", 2);
-        recepteur = new Recepteur(2, 0f, form);
-        destination = new DestinationFinale();
 
         source.connecter(emetteur);
         emetteur.connecter(transmetteurLogique);
-        recepteur.connecter(transmetteurLogique);
+        transmetteurLogique.connecter(recepteur);
         recepteur.connecter(destination);
         
         if (affichage) {
@@ -238,13 +252,37 @@ public class Simulateur {
 
     		else if (args[i].matches("-seedBruit")) {
                 bruitSeeded = true;
-                i++; 
-                try { 
+                i++;
+                try {
                     bruitSeed = Integer.valueOf(args[i]);
                 } catch (Exception e) {
                     throw new ArgumentsException("Valeur du parametre -seedBruit invalide :" + args[i]);
-                }           		
+                }
 }
+
+			else if (args[i].matches("-ti")) {
+				// Trajets multiples : lire les couples (dt, ar) jusqu'à 5 max
+				trajetsMultiples = new ArrayList<>();
+				i++;
+				while (i < args.length && !args[i].startsWith("-") && trajetsMultiples.size() < 5) {
+					try {
+						int dt = Integer.valueOf(args[i]);
+						i++;
+						if (i >= args.length || args[i].startsWith("-")) {
+							throw new ArgumentsException("Valeur ar manquante après dt pour -ti");
+						}
+						float ar = Float.valueOf(args[i]);
+						trajetsMultiples.add(new Trajet(dt, ar));
+						i++;
+					} catch (NumberFormatException e) {
+						throw new ArgumentsException("Valeurs invalides pour -ti : " + args[i-1]);
+					}
+				}
+				i--; // Compenser le i++ du for
+				if (trajetsMultiples.isEmpty()) {
+					throw new ArgumentsException("Au moins un couple (dt, ar) requis pour -ti");
+				}
+			}
 
 
 
