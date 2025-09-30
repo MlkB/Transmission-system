@@ -150,17 +150,11 @@ public class Emetteur<T> extends Source<Float> implements  DestinationInterface 
 
 
          public void connecterSonde(Sonde sonde) {
-            
-               for (DestinationInterface<Float> destinationConnectee : destinationsConnectees) {
-                     if (destinationConnectee == sonde) {
-                          return; // Déjà connecté
-                      
-                     } else { destinationsConnectees.add(sonde);   }       
-              
-              }
-
-    
+            // Vérifier si déjà connecté
+            if (!destinationsConnectees.contains(sonde)) {
+                destinationsConnectees.add(sonde);
             }
+         }
 
         
        

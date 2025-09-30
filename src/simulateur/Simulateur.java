@@ -9,6 +9,7 @@ import information.Information;
 import information.InformationNonConformeException;
 import visualisations.SondeLogique;
 import visualisations.SondeAnalogique;
+import visualisations.VueCourbe;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +28,10 @@ public class Simulateur {
       	
     /** indique si le Simulateur utilise des sondes d'affichage */
     private boolean affichage = false;
-    
+
+    /** indique si le Simulateur doit générer les graphiques d'analyse TEB */
+    private boolean modeAnalyse = false;
+
     /** indique si le Simulateur utilise un message généré de manière aléatoire (message imposé sinon) */
     private boolean messageAleatoire = true;
     
@@ -135,9 +139,9 @@ public class Simulateur {
         destination = new DestinationFinale();
 
         SondeLogique sondeSource = new SondeLogique("source",100 );
-        SondeAnalogique sondeEmetteur = new SondeAnalogique("récepteur");
+        SondeAnalogique sondeEmetteur = new SondeAnalogique("émetteur");
         SondeAnalogique sondeTransmetteur = new SondeAnalogique("transmetteur");
-        SondeLogique sondeRecepteur = new SondeLogique("dst", 100);
+        SondeLogique sondeRecepteur = new SondeLogique("récepteur", 100);
 
         source.connecter(emetteur);
         emetteur.connecter(transmetteurLogique);
@@ -180,6 +184,8 @@ public class Simulateur {
     		if (args[i].matches("-s")){
     			affichage = true;
     		}
+
+
     		
     		else if (args[i].matches("-seed")) {
     			aleatoireAvecGerme = true;
@@ -283,8 +289,6 @@ public class Simulateur {
     	source.emettre();
 		System.err.println("DEBUG: Source a émis " + source.getInformationEmise().nbElements() + " bits");
 		System.err.println("DEBUG: Premiers bits source: " + source.getInformationEmise().iemeElement(0) + " " + source.getInformationEmise().iemeElement(1) + " " + source.getInformationEmise().iemeElement(2));
-
-        emetteur.recevoir(source.getInformationEmise());
 		System.err.println("DEBUG: Emetteur a généré " + emetteur.getInformationEmise().nbElements() + " échantillons");
 
         // emetteur émet automatiquement vers transmetteur dans recevoir()
@@ -306,11 +310,19 @@ public class Simulateur {
    
    	   	
    	
+    /**
+     * Retourne si le mode affichage est activé
+     * @return true si l'affichage est activé
+     */
+    public boolean isAffichageActive() {
+        return affichage;
+    }
+
     /** La méthode qui calcule le taux d'erreur binaire en comparant
      * les bits du message émis avec ceux du message reçu.
      *
      * @return  La valeur du Taux dErreur Binaire.
-     */   	   
+     */
     public float  calculTauxErreurBinaire() {
     	Information<Boolean> infoEmise = source.getInformationEmise();
     	Information<Boolean> infoRecue = destination.getInformationRecue();
@@ -366,12 +378,20 @@ public class Simulateur {
     			s += args[i] + "  ";
     		}
     		System.out.println(s + "  =>   TEB : " + simulateur.calculTauxErreurBinaire());
+
+    		// Générer les graphiques d'analyse TEB si affichage activé
+    		if (simulateur.isAffichageActive()) {
+    			// Utiliser SNR = 10dB par défaut si pas de bruit dans la simulation
+    			float snr = (simulateur.SNRpB != null) ? simulateur.SNRpB : 10.0f;
+    			AnalyseTEB.genererGraphiques(simulateur.nbBitsMess, simulateur.nEch,
+    			                             snr, simulateur.form, simulateur.seed, simulateur.trajetsMultiples);
+    		}
     	}
     	catch (Exception e) {
     		System.out.println(e);
     		e.printStackTrace();
     		System.exit(-2);
-    	}              	
+    	}
     }
 }
 
