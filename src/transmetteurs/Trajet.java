@@ -45,7 +45,7 @@ public class Trajet {
     /**
      * Modifie le retard du trajet
      * @param tau le nouveau retard (doit être >= 0)
-     * @throws IllegalArgumentException si tau < 0
+     * @throws IllegalArgumentException si tau &lt; 0
      */
     public void setTau(int tau) {
         if (tau < 0) {

@@ -122,26 +122,8 @@ public class Emetteur<T> extends Source<Float> implements  DestinationInterface 
             destinationsConnectees.add(transmetteurLogique);
         }
     }
-             
-    /**
-     * analyse les arguments passés en ligne de commande
-     * et initialise les attributs du Simulateur en conséquence
-     * 
-     * @param args  les arguments passés en ligne de commande
-     * 
-     * @throws Exception si un problème survient lors de l'analyse
-     * des arguments
-     *
-     * 
-    
-        * @throws InformationNonConformeException si l'Information comporte une anomalie
-        */
 
 
- 
-
-
-         
          @Override
          public void connecter(Emetteur emetteur) {
           
