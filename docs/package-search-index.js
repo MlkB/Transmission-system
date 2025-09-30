@@ -1,1 +1,0 @@
-packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"application"},{"l":"destinations"},{"l":"emmetteurs"},{"l":"information"},{"l":"recepteur"},{"l":"simulateur"},{"l":"sources"},{"l":"transmetteurs"},{"l":"visualisations"}];updateSearchResults();
