@@ -1,21 +1,2 @@
 #!/bin/bash
-java -cp bin simulateur.Simulateur -mess 10
-java -cp bin simulateur.Simulateur -seed 3 -form NRZ
-java -cp bin simulateur.Simulateur -mess 10 -seed 3
-java -cp bin simulateur.Simulateur -mess 1010101010101 -form NRZ
-java -cp bin simulateur.Simulateur -mess 1010101010101 -form NRZT
-java -cp bin simulateur.Simulateur -mess 1010101010101 -form RZ
-java -cp bin simulateur.Simulateur -mess 1010101010101 -form NRZ -ne 10
-java -cp bin simulateur.Simulateur -mess 1010101010101 -form NRZT -ne 10
-java -cp bin simulateur.Simulateur -mess 1010101010101 -form RZ -ne 10
-java -cp bin simulateur.Simulateur -mess 1010101010101  -ne 10
-java -cp bin simulateur.Simulateur -form RZ -ne 10
-java -cp bin simulateur.Simulateur -form NRZ -ne 10
-java -cp bin simulateur.Simulateur -form NRZT -ne 10
-java -cp bin simulateur.Simulateur -mess 10 -form RZ
-java -cp bin simulateur.Simulateur -mess 10 -form NRZ 
-java -cp bin simulateur.Simulateur -mess 10 -form NRZT
-java -cp bin simulateur.Simulateur -mess 10 
-java -cp bin simulateur.Simulateur -mess 10 -seed 3 -form RZ -ne 10
-java -cp bin simulateur.Simulateur -mess 10 -seed 3 -form NRZ -ne 10
-java -cp bin simulateur.Simulateur -mess 10 -seed 3 -form NRZT -ne 10
+java -cp bin simulateur.Simulateur -mess 100 -seed 5 -s -form NRZT
