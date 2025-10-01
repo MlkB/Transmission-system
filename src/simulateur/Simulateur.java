@@ -16,17 +16,32 @@ import java.util.ArrayList;
 import java.util.List;
 import emmetteurs.Emetteur;
 
-
-
-/** La classe Simulateur permet de construire et simuler une chaîne de
+/**
+ * La classe Simulateur permet de construire et simuler une chaîne de
  * transmission composée d'une Source, d'un nombre variable de
  * Transmetteur(s) et d'une Destination.
- * @author cousin
- * @author prou
+ * Simulateur d'une chaîne de transmission numérique :
+ * Source (fixe/aléatoire) → Émetteur (NRZ/RZ/NRZT) → Canal (parfait ou AWGN) → Récepteur → Destination.
  *
+ * <p>Options de ligne de commande :
+ * <ul>
+ *   <li>-s : active les sondes d'affichage (logique/analogique)</li>
+ *   <li>-mess m : si m est binaire (ex. "10101"), message fixe ; si m est un entier N, génère N bits aléatoires</li>
+ *   <li>-seed v : graine pour la génération du message (reproductibilité)</li>
+ *   <li>-form F : forme d'onde de l'émetteur (NRZ | RZ | NRZT). Défaut : RZ</li>
+ *   <li>-ne k : nombre d'échantillons par symbole (nbEch). Défaut : 30</li>
+ *   <li>-snrpb d : SNR par bit en dB ; si absent → transmetteur parfait (pas de bruit)</li>
+ *   <li>-seedBruit v : graine du bruit AWGN (reproductibilité du canal)</li>
+ * </ul>
+ * Exemples :
+ * <pre>
+ *   java simulateur.Simulateur -mess 101001 -form NRZ -ne 20
+ *   java simulateur.Simulateur -mess 1000 -seed 42 -snrpb 8 -seedBruit 7 -form NRZT -ne 30
+ * </pre>
+
  */
 public class Simulateur {
-      	
+
     /** indique si le Simulateur utilise des sondes d'affichage */
     private boolean affichage = false;
 
@@ -35,28 +50,27 @@ public class Simulateur {
 
     /** indique si le Simulateur utilise un message généré de manière aléatoire (message imposé sinon) */
     private boolean messageAleatoire = true;
-    
+
     /** indique si le Simulateur utilise un germe pour initialiser les générateurs aléatoires */
     private boolean aleatoireAvecGerme = false;
-    
+
     /** la valeur de la semence utilisée pour les générateurs aléatoires */
     private Integer seed = null; // pas de semence par défaut
-    
+
     /** la longueur du message aléatoire à transmettre si un message n'est pas imposé */
-    private int nbBitsMess = 100; 
-    
+    private int nbBitsMess = 100;
+
     /** la chaîne de caractères correspondant à m dans l'argument -mess m */
     private String messageString = "100";
-   
-   	
-    /** le  composant Source de la chaine de transmission */
-    private Source <Boolean>  source = null;
-    
-    /** le  composant Transmetteur parfait logique de la chaine de transmission */
-    private Transmetteur <Boolean, Float>  transmetteurLogique = null;
-    
-    /** le  composant Destination de la chaine de transmission */
-    private Destination <Boolean>  destination = null;
+
+    /** le composant Source de la chaîne de transmission */
+    private Source<Boolean> source = null;
+
+    /** le composant Transmetteur logique de la chaîne de transmission */
+    private Transmetteur<Float, Float> transmetteurLogique = null;
+
+    /** le composant Destination de la chaîne de transmission */
+    private Destination<Boolean> destination = null;
 
 	/** la conversion numérique à analogique utilisée */
 	private String form = "RZ";
@@ -187,7 +201,7 @@ public class Simulateur {
     		}
 
 
-    		
+
     		else if (args[i].matches("-seed")) {
     			aleatoireAvecGerme = true;
     			i++; 

@@ -67,6 +67,12 @@ public class TransmetteurImparfait<E> extends Transmetteur {
 
     }
 
+    /**
+     * Calcule la variance du bruit gaussien à ajouter pour atteindre le SNR/bit demandé :
+     * {@code E_b ≈ puissanceSignal / nEch}, puis {@code σ² = E_b / 10^(SNRdB/10)}.
+     * Met à jour {@code variance}.
+     */
+
     public void calculerVariance() {
         calculPuissanceSignal();
         // estimate signal power per bit instead of per sample

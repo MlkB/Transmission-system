@@ -126,7 +126,7 @@ public class Emetteur<T> extends Source<Float> implements  DestinationInterface 
 
          @Override
          public void connecter(Emetteur emetteur) {
-          
+
             throw new UnsupportedOperationException("Unimplemented method 'connecter'");
          }
 
