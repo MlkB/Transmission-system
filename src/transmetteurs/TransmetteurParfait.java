@@ -4,6 +4,7 @@ import java.util.Iterator;
 import destinations.DestinationInterface;
 import information.Information;
 import information.InformationNonConformeException;
+import emmetteurs.Emetteur;
 
 /**
  * Transmetteur parfait : recopie l'information reçue telle quelle
