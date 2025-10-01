@@ -226,7 +226,7 @@ public class Simulateur {
 				}
 			}
 
-			else if (args[i].matches("-ne")) {
+			else if (args[i].matches("-nbEch")) {
 				i++;
 				try {
 					nEch = Integer.valueOf(args[i]);

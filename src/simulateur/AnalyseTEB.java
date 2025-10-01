@@ -16,7 +16,7 @@ public class AnalyseTEB {
 
     // Ces paramètres sont passés par le Simulateur via genererGraphiques()
     private static int nbBitsMessage;
-    private static int ne;
+    private static int nbEch;
     private static float snrDb;
     private static String forme;
     private static Integer seed;
@@ -44,7 +44,7 @@ public class AnalyseTEB {
             StringBuilder args = new StringBuilder();
             args.append("-mess ").append(nbBitsMessage);
             args.append(" -form ").append(forme);
-            args.append(" -ne ").append(ne);
+            args.append(" -nbEch ").append(nbEch);
             if (seed != null) {
                 args.append(" -seed ").append(seed);
             }
@@ -97,7 +97,7 @@ public class AnalyseTEB {
             StringBuilder args = new StringBuilder();
             args.append("-mess ").append(nbBitsMessage);
             args.append(" -form ").append(forme);
-            args.append(" -ne ").append(ne);
+            args.append(" -nbEch ").append(nbEch);
             if (seed != null) {
                 args.append(" -seed ").append(seed);
             }
@@ -147,7 +147,7 @@ public class AnalyseTEB {
             StringBuilder args = new StringBuilder();
             args.append("-mess ").append(nbBitsMessage);
             args.append(" -form ").append(forme);
-            args.append(" -ne ").append(ne);
+            args.append(" -nbEch ").append(nbEch);
             if (seed != null) {
                 args.append(" -seed ").append(seed);
             }
@@ -176,24 +176,24 @@ public class AnalyseTEB {
     /**
      * Méthode appelée par Simulateur pour générer les 3 graphiques d'analyse TEB
      * @param nbBits nombre de bits du message
-     * @param neantillons nombre d'échantillons par bit
+     * @param nbEchantillons nombre d'échantillons par bit
      * @param snr rapport signal/bruit en dB
      * @param forme forme du signal (RZ, NRZ, NRZT)
      * @param seedValue seed pour reproductibilité (peut être null)
      * @param trajets liste des trajets définis par l'utilisateur
      */
-    public static void genererGraphiques(int nbBits, int neantillons, float snr, String forme, Integer seedValue, List<Trajet> trajets) {
+    public static void genererGraphiques(int nbBits, int nbEchantillons, float snr, String forme, Integer seedValue, List<Trajet> trajets) {
         try {
             // Configurer les paramètres
             nbBitsMessage = nbBits;
-            ne = neantillons;
+            nbEch = nbEchantillons;
             snrDb = snr;
             AnalyseTEB.forme = forme;
             seed = seedValue;
             trajetsUtilisateur = trajets;
 
             System.out.println("\n=== Génération des graphiques d'analyse TEB ===");
-            System.out.println("Paramètres: mess=" + nbBits + ", ne=" + neantillons +
+            System.out.println("Paramètres: mess=" + nbBits + ", nbEch=" + nbEchantillons +
                              ", snr=" + snr + "dB, forme=" + forme);
 
             // Lancer les 3 analyses avec un délai pour laisser l'interface se rafraîchir
