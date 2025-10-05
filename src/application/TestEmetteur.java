@@ -7,7 +7,36 @@ import transmetteurs.TransmetteurParfait;
 import transmetteurs.Recepteur;
 import destinations.DestinationFinale;
 
+/**
+ * Classe de test pour vérifier le fonctionnement d'un {@link Emetteur}
+ * et sa propagation d'informations à travers une chaîne de transmission
+ * simple : Emetteur -> TransmetteurParfait -> Recepteur -> DestinationFinale.
+ * <p>
+ * Le test crée des données binaires, les envoie via l'émetteur, et
+ * compare les informations émises et reçues pour valider la transmission.
+ * </p>
+ */
 public class TestEmetteur {
+
+    /**
+     * Constructeur par défaut de la classe de test.
+     * <p>
+     * Rien à initialiser car toutes les méthodes sont statiques.
+     * </p>
+     */
+    public TestEmetteur() {
+        // pas d'initialisation nécessaire
+    }
+
+    /**
+     * Point d'entrée principal du test.
+     * <p>
+     * Crée une chaîne de transmission simple et vérifie la propagation des informations.
+     * </p>
+     *
+     * @param args arguments de la ligne de commande (non utilisés)
+     * @throws Exception si une erreur survient lors de la réception ou de l'émission des informations
+     */
     public static void main(String[] args) throws Exception {
 
         // 1) Données de test

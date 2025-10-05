@@ -8,6 +8,13 @@ package visualisations;
 
 import javax.swing.*;
 
+/**
+ * Classe représentant une vue pour afficher une valeur unique.
+ * <p>
+ * Permet d'afficher une valeur dans une fenêtre avec un composant {@link JLabel}.
+ * La fenêtre est automatiquement positionnée pour éviter le chevauchement avec d'autres vues.
+ * </p>
+ */
 public class VueValeur  extends Vue {
 
     private static final long serialVersionUID = 1917L;
@@ -16,24 +23,32 @@ public class VueValeur  extends Vue {
 	 * omposant utilisé pour afficher la valeur
 	 */
 	private JLabel jLabel;
-		
-		
-  
+
+	/**
+	 * Constructeur de VueValeur.
+	 * <p>
+	 * Crée une fenêtre affichant la valeur passée en paramètre.
+	 * La position de la fenêtre est automatiquement déterminée.
+	 * </p>
+	 *
+	 * @param valeur la valeur à afficher (peut être de n'importe quel type)
+	 * @param nom le titre de la fenêtre
+	 */
     public  VueValeur (Object valeur, String nom) {   
        
-	super(nom); 
-	String s = " " + valeur;
-	jLabel = new JLabel(s);
-      	
-	int xPosition = Vue.getXPosition();
-	int yPosition = Vue.getYPosition();
-	setLocation(xPosition, yPosition);
-      	
-      	add(jLabel);
-	setDefaultCloseOperation(EXIT_ON_CLOSE);  
-	setSize(300, 100);
-	setVisible(true);  
-	repaint();
+		super(nom);
+		String s = " " + valeur;
+		jLabel = new JLabel(s);
+
+		int xPosition = Vue.getXPosition();
+		int yPosition = Vue.getYPosition();
+		setLocation(xPosition, yPosition);
+
+			add(jLabel);
+		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		setSize(300, 100);
+		setVisible(true);
+		repaint();
     }
    
    

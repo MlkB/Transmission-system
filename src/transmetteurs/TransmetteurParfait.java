@@ -11,9 +11,11 @@ import emmetteurs.Emetteur;
  * vers toutes les destinations connectées (aucune altération).
  * @param <E> type des éléments transportés
  */
-
 public class TransmetteurParfait<E> extends Transmetteur<E,E> {
 
+    /**
+     * constructeur du transmetteur parfait
+     */
     public TransmetteurParfait() {
         super();
     }

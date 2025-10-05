@@ -9,18 +9,44 @@ import java.util.LinkedList;
 import java.util.Random;
 
 
-
+/**
+ * Transmetteur imparfait simulant un canal avec bruit gaussien.
+ * <p>
+ * Ce transmetteur prend des informations de type {@code Float} en entrée, ajoute un
+ * bruit gaussien selon le SNR/bit demandé et émet les informations modifiées aux
+ * destinations connectées.
+ * </p>
+ *
+ * @param <E> le type d'information émise (ici {@code Float})
+ */
 public class TransmetteurImparfait<E> extends Transmetteur {
 
+    /** Puissance du signal reçu. */
     public float puissanceSignal;
+
+    /** Variance du bruit gaussien à ajouter. */
     public float variance;
+
+    /** Rapport signal/bruit en dB. */
     public float SNRdB;
+
+    /** Nombre d'échantillons par bit. */
     protected int nEch;
+
+    /** Graine utilisée pour la génération aléatoire. */
     private int seed;
+
+    /** Générateur de nombres aléatoires pour le bruit. */
     private Random rand;
+
+    /** Liste des échantillons de bruit générés. */
     protected LinkedList<Float> bruit = new LinkedList<Float>();
 
-// Constructeur sans graine (bruit totalement aléatoire)
+    /**
+     * Constructeur sans graine (bruit totalement aléatoire)
+     * @param nEch le nombre d'échantillon à utiliser
+     * @param SNRdB le signal sur bruit en décibel à utiliser
+     */
     public TransmetteurImparfait(int nEch, float SNRdB) {
         super();
         this.SNRdB = SNRdB;
@@ -28,7 +54,12 @@ public class TransmetteurImparfait<E> extends Transmetteur {
         this.rand = new Random(); // aléatoire total
     }
 
-    // Constructeur avec graine
+    /**
+     * Constructeur avec graine
+     * @param nEch le nombre d'échantillon à utiliser
+     * @param SNRdB le signal sur bruit en décibel à utiliser
+     * @param seed la graine à utiliser pour générer le bruit gaussien
+     */
     public TransmetteurImparfait(int nEch, float SNRdB, int seed) {
         super();
         this.SNRdB = SNRdB;
@@ -37,7 +68,10 @@ public class TransmetteurImparfait<E> extends Transmetteur {
         this.rand = new Random(seed); // reproductible
     }
 
-
+    /**
+     * permet de connecter le transmetteur à une destination
+     * @param destination  la destination à connecter
+     */
     @Override
     public void connecter(DestinationInterface destination) {
 		destinationsConnectees.add(destination);
@@ -46,7 +80,7 @@ public class TransmetteurImparfait<E> extends Transmetteur {
    /**
      * permet de recevoir l'information depuis une source ou un émetteur
      * @param information  l'information  à recevoir
-     * @throws InformationNonConformeException
+     * @throws InformationNonConformeException si l'information est nulle
      */
     @Override
     public void recevoir(Information information) throws InformationNonConformeException {
@@ -55,7 +89,10 @@ public class TransmetteurImparfait<E> extends Transmetteur {
         }
         this.informationRecue = information;
     }
-    
+
+    /**
+     * permet de calculer la puissance du signa reçu
+     */
     public void calculPuissanceSignal() {
         float somme = 0;
 
@@ -80,6 +117,10 @@ public class TransmetteurImparfait<E> extends Transmetteur {
         this.variance = bitsignal / (float) Math.pow(10, SNRdB / 10.0);
     }
 
+    /**
+     * génère le bruit blanc additif gaussien et
+     * l'ajoute au signal reçu pour créer le signal émis
+     */
     public void genererBBAG() {
         this.informationEmise = new Information<Float>();
         calculerVariance();
@@ -92,6 +133,10 @@ public class TransmetteurImparfait<E> extends Transmetteur {
 
     }
 
+    /**
+     * envoie le signal émis à toutes les destinations
+     * @throws InformationNonConformeException si l'information n'est pas conforme
+     */
     @Override
     public void emettre() throws InformationNonConformeException {
         Iterator<DestinationInterface<E>> it = destinationsConnectees.iterator();

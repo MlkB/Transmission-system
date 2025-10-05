@@ -74,7 +74,10 @@ public  abstract class Source <T> implements  SourceInterface <T> {
     }
 
 
-
+    /**
+     * permet de connecter la sonde à une destination
+     * @param destination la destination à connecter
+     */
     public void connecter(DestinationInterface destination) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'connecter'");

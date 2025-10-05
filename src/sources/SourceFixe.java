@@ -9,6 +9,9 @@ import visualisations.SondeLogique;
  */
 public class SourceFixe extends Source {
 
+	/**
+	 * constructeur de la source fixe
+	 */
 	public SourceFixe() {
 		super();
 	}
@@ -37,6 +40,10 @@ public class SourceFixe extends Source {
 		destinationsConnectees.add(emetteur);
 	}
 
+	/**
+	 * permet de connecter la source à une sonde logique
+	 * @param sondeSource la sonde logique à connecter
+	 */
 	public void connecterSonde(SondeLogique sondeSource) {
 		destinationsConnectees.add(sondeSource);
 	}

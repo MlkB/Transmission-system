@@ -12,17 +12,26 @@ import information.InformationNonConformeException;
  * Classe d'un composant représentant la source aléatoire d'une chaîne de transmission
  */
 public class SourceAleatoire extends Source {
-	
-		public Integer length = null;
-		public Integer seed = null;
 
-		public SourceAleatoire() {
+	/**
+	 * longueur du message aléatoire
+	 */
+	public Integer length = null;
+	/**
+	 * graine du générateur aléatoire
+	 */
+	public Integer seed = null;
+
+	/**
+	 * constructeur de la source aléatoire
+	 */
+	public SourceAleatoire() {
 			super();
 		}
 
 	/**
 	 * permet de fixer une graine pour la génération du message aléatoire
-	 * @param seed
+	 * @param seed la graine à utiliser pour la génération aléatoire
 	 */
 	public void setSeed(int seed) {
 			this.seed = seed;
@@ -30,7 +39,7 @@ public class SourceAleatoire extends Source {
 
 	/**
 	 * permet de fixer la longueur du message aléatoire
-	 * @param length
+	 * @param length la longueur du message à générer
 	 */
 		public void setLength(int length) {
 			this.length = length;

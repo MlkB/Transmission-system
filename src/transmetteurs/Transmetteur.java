@@ -48,7 +48,7 @@ public abstract  class Transmetteur <R,E> implements  DestinationInterface <R>, 
     /**
      * retourne la dernière information reçue en entrée du
      * transmetteur
-     * @return une information   
+     * @return l'information émise convertie en {@code Information<Float>}
      */
     public Information <R>  getInformationRecue() {
     	return this.informationRecue;
@@ -63,6 +63,10 @@ public abstract  class Transmetteur <R,E> implements  DestinationInterface <R>, 
     	return this.informationEmise;
     }
 
+    /**
+     * retourne l'information analogique émise par le transmetteur
+     * @return this.informationEmise l'information emise de type Float
+     */
     public Information <Float>  getInformationAnalogEmise() {
     	return (Information<Float>) this.informationEmise;
     }

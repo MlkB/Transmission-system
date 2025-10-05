@@ -97,7 +97,8 @@ public class Simulateur {
      * @param args le tableau des différents arguments.
      *
      * @throws ArgumentsException si un des arguments est incorrect
-     * @throws InformationNonConformeException 
+     * @throws InformationNonConformeException si l'information générée ou transmise ne correspond pas
+	 *         au type ou à la forme attendue
      *
      */   
     public  Simulateur(String [] args) throws ArgumentsException, InformationNonConformeException {

@@ -16,7 +16,7 @@ public  abstract class Sonde <T> extends Destination <T> {
     protected String nom;
    
     /**
-     *  
+     *  constructeur public de la sonde
      * @param nom  le nom de la fenêtre d'affichage
      */   
     public Sonde(String nom) {
