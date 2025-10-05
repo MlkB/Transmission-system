@@ -11,8 +11,11 @@ import javax.swing.*;
 public class VueValeur  extends Vue {
 
     private static final long serialVersionUID = 1917L;
-    
-    private JLabel jLabel;
+
+	/**
+	 * omposant utilisé pour afficher la valeur
+	 */
+	private JLabel jLabel;
 		
 		
   

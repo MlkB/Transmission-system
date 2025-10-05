@@ -6,6 +6,7 @@ import information.*;
  * Classe Abstraite d'un composant destination d'informations dont les
  * éléments sont de type T
  * @author prou
+ * @param <T> type des valeurs traitées
  */
 public  abstract class Destination <T> implements DestinationInterface <T> {
     

@@ -9,6 +9,7 @@ import java.util.*;
  * Classe Abstraite d'un composant source d'informations dont les
  * éléments sont de type T
  * @author prou
+ * @param <T> type des valeurs traitées
  */
 public  abstract class Source <T> implements  SourceInterface <T> {
    

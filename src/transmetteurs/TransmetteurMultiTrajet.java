@@ -16,6 +16,7 @@ import java.util.Random;
  * - s(t) est le signal direct
  * - α_k·s(t-tau_k) représente les N trajets réfléchis avec atténuation et retard
  * - b(t) est un bruit blanc gaussien centré
+ * @param <E> : type des données d'entrée
  */
 public class TransmetteurMultiTrajet<E> extends Transmetteur {
 

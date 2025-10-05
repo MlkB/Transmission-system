@@ -6,6 +6,7 @@ import destinations.Destination;
 /** 
  * Classe Abstraite d'un composant destination réalisant un affichage
  * @author prou
+ * @param <T> : type de l'information transportée
  */
 public  abstract class Sonde <T> extends Destination <T> {
    

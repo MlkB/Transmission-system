@@ -6,15 +6,23 @@ import information.InformationNonConformeException;
 /**
  * Classe d'un composant héritant de Destination
  * etant la destination finale d'une chaîne de transimission
+ * @param <T> type des valeurs traitées
  */
 
 public class DestinationFinale<T> extends Destination<T> {
 
 	/**
+	 * constructeur non implémenté
+	 */
+	public DestinationFinale() {
+		// rien à implémenter
+	}
+
+	/**
 	 * fonction peremttant de recevoir une information de la part d'un transmetteur
 	 * ou d'un recepteur
 	 * @param information  l'information  à recevoir
-	 * @throws InformationNonConformeException
+	 * @throws InformationNonConformeException si l'information est nulle
 	 */
 	@Override
 	public void recevoir(Information<T> information) throws InformationNonConformeException {

@@ -11,9 +11,18 @@ import java.awt.geom.*;
 public class VueCourbe  extends Vue {
     
     private static final long serialVersionUID = 1917L;
-   
-    private Point2D.Float [] coordonnees;
+
+	/**
+	 * tableau des coordonnées de la courbe
+	 */
+	private Point2D.Float [] coordonnees;
+	/**
+	 * valeur maximale de y dans les données
+	 */
     private float yMax = 0;
+	/**
+	 * valeur minimale de y dans les données
+	 */
     private float yMin = 0;
    	
    	

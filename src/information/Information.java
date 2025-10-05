@@ -3,8 +3,9 @@ package information;
 import java.util.*;
 
 /** 
- *  
+ *  Information transportée par le canal de transmission
  * @author prou
+ * @param <T> type des valeurs traitées
  */	
 public  class Information <T>  implements Iterable <T> {
    

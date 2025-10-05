@@ -10,12 +10,31 @@ import visualisations.Sonde;
 import visualisations.SondeAnalogique;
 import visualisations.SondeLogique;
 
-public class Emetteur<T> extends Source<Float> implements  DestinationInterface <T>{        
-    
-    private Information<Boolean> informationRecue;
-    private String typeCodage;
-    private int nbEch;  
+/**
+ * Classe décrivant l'émetteur utilisé par la chaine de transmission
+ * pour coder le message booléen en message analogique
+ * @param <T> type de l'information
+ */
+public class Emetteur<T> extends Source<Float> implements DestinationInterface <T>{
 
+    /**
+     * information reçue par l'émetteur
+     */
+    private Information<Boolean> informationRecue;
+    /**
+     * codage numérique vers analogique utilisé par l'émetteur
+     */
+    private String typeCodage;
+    /**
+     * nombre d'échantillon utilisé par l'émetteur pour le codage
+     */
+    private int nbEch;
+
+    /**
+     * constrycteur de la casse emetteur
+     * @param typeCodage donne le codage utilisé par l'émetteur
+     * @param nbEch donne le nombre d'échantillons utilisés par l'émetteur
+     */
     public Emetteur(String typeCodage, int nbEch) {
         super();
         this.typeCodage = (typeCodage == null) ? "RZ" : typeCodage;
@@ -29,7 +48,7 @@ public class Emetteur<T> extends Source<Float> implements  DestinationInterface 
      * en information analogique selon trois types de codages :
      * NRZ, RZ et NRZT. Le type de codage est déterminé selon la valeur
      * de la fonction typeCodage
-     * @throws InformationNonConformeException
+     * @throws InformationNonConformeException si le type de codage est inconnu
      */
     public void convertir_signal() throws InformationNonConformeException {
 
@@ -115,7 +134,11 @@ public class Emetteur<T> extends Source<Float> implements  DestinationInterface 
             return this.informationRecue;
       }
 
-
+    /**
+     * permet de connecter l'émetteur au transmetteur
+     * @param transmetteurLogique donne le transmetteur logique auquel
+     *                            l'émetteur doit se connecter
+     */
     public void connecter(Transmetteur transmetteurLogique) {
         // Vérifier si déjà connecté
         if (!destinationsConnectees.contains(transmetteurLogique)) {
@@ -130,8 +153,11 @@ public class Emetteur<T> extends Source<Float> implements  DestinationInterface 
             throw new UnsupportedOperationException("Unimplemented method 'connecter'");
          }
 
-
-         public void connecterSonde(Sonde sonde) {
+    /**
+     * permet de connecter l'émetteur à une sonde
+     * @param sonde la sonde à connecter
+     */
+    public void connecterSonde(Sonde sonde) {
             // Vérifier si déjà connecté
             if (!destinationsConnectees.contains(sonde)) {
                 destinationsConnectees.add(sonde);

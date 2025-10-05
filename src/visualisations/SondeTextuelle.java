@@ -6,6 +6,7 @@ import information.Information;
  * Classe réalisant l'affichage (textuel) d'information composée
  * d'éléments de type T
  * @author prou
+ * @param <T> : type des informations transportées par le canal de transmission
  */
 public class SondeTextuelle <T> extends Sonde <T> {
    

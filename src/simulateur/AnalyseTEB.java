@@ -23,8 +23,17 @@ public class AnalyseTEB {
     private static List<Trajet> trajetsUtilisateur;
 
     /**
+     * Construit un analyseur de TEB avec les paramètres par défaut.
+     */
+    public AnalyseTEB() {
+        // rien à initialiser pour l'instant
+    }
+
+    /**
      * Analyse 1 : TEB en fonction du nombre de trajets
      * On ajoute progressivement les trajets définis par l'utilisateur
+     * @throws Exception si une erreur survient lors de l'exécution du simulateur
+     *                   ou lors de l'analyse des résultats.
      */
     public static void analyserNbTrajets() throws Exception {
         System.out.println("=== Analyse TEB = f(NbTrajets) ===");
@@ -74,6 +83,8 @@ public class AnalyseTEB {
     /**
      * Analyse 2 : TEB en fonction du coefficient d'atténuation alpha
      * On prend les trajets utilisateur et on fait varier alpha du premier trajet
+     * @throws Exception si une erreur survient lors de l'exécution du simulateur
+     * ou lors de l'analyse des résultats.
      */
     public static void analyserAlpha() throws Exception {
         System.out.println("=== Analyse TEB = f(alpha_i) ===");
@@ -126,6 +137,8 @@ public class AnalyseTEB {
     /**
      * Analyse 3 : TEB en fonction du délai tau
      * On prend les trajets utilisateur et on fait varier tau du premier trajet
+     * @throws Exception si une erreur survient lors de l'exécution du simulateur
+     * ou lors de l'analyse des résultats.
      */
     public static void analyserTau() throws Exception {
         System.out.println("=== Analyse TEB = f(tau_i) ===");
@@ -211,6 +224,17 @@ public class AnalyseTEB {
         }
     }
 
+    /**
+     * Point d'entrée principal permettant de tester l'analyse du TEB
+     * en mode autonome (standalone).
+     * <p>
+     * Utilise des paramètres par défaut (nombre de bits, nombre d'échantillons,
+     * forme du signal, seed, et trajets prédéfinis) afin de générer
+     * automatiquement les graphiques de TEB.
+     * </p>
+     *
+     * @param args arguments de la ligne de commande (non utilisés ici)
+     */
     public static void main(String[] args) {
         // Utiliser des paramètres par défaut pour le test standalone
         List<Trajet> trajetsTest = new java.util.ArrayList<>();

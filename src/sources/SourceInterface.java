@@ -10,6 +10,7 @@ import emmetteurs.Emetteur;
  * Interface d'un composant ayant le comportement d'une source
  * d'informations dont les éléments sont de type T
  * @author prou
+ * @param <T> type des valeurs traitées
  */
 public interface SourceInterface <T>  {
    
