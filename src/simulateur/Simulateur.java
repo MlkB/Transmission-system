@@ -303,24 +303,24 @@ public class Simulateur {
     public void execute() throws Exception {
 
     	source.emettre();
-		System.err.println("DEBUG: Source a émis " + source.getInformationEmise().nbElements() + " bits");
-		System.err.println("DEBUG: Premiers bits source: " + source.getInformationEmise().iemeElement(0) + " " + source.getInformationEmise().iemeElement(1) + " " + source.getInformationEmise().iemeElement(2));
-		System.err.println("DEBUG: Emetteur a généré " + emetteur.getInformationEmise().nbElements() + " échantillons");
+		//System.err.println("DEBUG: Source a émis " + source.getInformationEmise().nbElements() + " bits");
+		//System.err.println("DEBUG: Premiers bits source: " + source.getInformationEmise().iemeElement(0) + " " + source.getInformationEmise().iemeElement(1) + " " + source.getInformationEmise().iemeElement(2));
+		//System.err.println("DEBUG: Emetteur a généré " + emetteur.getInformationEmise().nbElements() + " échantillons");
 
         // emetteur émet automatiquement vers transmetteur dans recevoir()
         transmetteurLogique.emettre();
-		System.err.println("DEBUG: Transmetteur a émis " + transmetteurLogique.getInformationEmise().nbElements() + " échantillons");
+		//System.err.println("DEBUG: Transmetteur a émis " + transmetteurLogique.getInformationEmise().nbElements() + " échantillons");
 
         // transmetteur émet vers recepteur
-		System.err.println("DEBUG: Signal transmetteur premiers échantillons: " + transmetteurLogique.getInformationAnalogEmise().iemeElement(0) + " " + transmetteurLogique.getInformationAnalogEmise().iemeElement(1) + " " + transmetteurLogique.getInformationAnalogEmise().iemeElement(2));
-		System.err.println("DEBUG: Signal emetteur premiers échantillons: " + emetteur.getInformationEmise().iemeElement(0) + " " + emetteur.getInformationEmise().iemeElement(1) + " " + emetteur.getInformationEmise().iemeElement(2));
+		//System.err.println("DEBUG: Signal transmetteur premiers échantillons: " + transmetteurLogique.getInformationAnalogEmise().iemeElement(0) + " " + transmetteurLogique.getInformationAnalogEmise().iemeElement(1) + " " + transmetteurLogique.getInformationAnalogEmise().iemeElement(2));
+		//System.err.println("DEBUG: Signal emetteur premiers échantillons: " + emetteur.getInformationEmise().iemeElement(0) + " " + emetteur.getInformationEmise().iemeElement(1) + " " + emetteur.getInformationEmise().iemeElement(2));
         recepteur.recevoir(transmetteurLogique.getInformationAnalogEmise());
         recepteur.emettre();
-		System.err.println("DEBUG: Recepteur a émis " + recepteur.getInformationEmise().nbElements() + " bits");
-		System.err.println("DEBUG: Premiers bits recepteur: " + recepteur.getInformationEmise().iemeElement(0) + " " + recepteur.getInformationEmise().iemeElement(1) + " " + recepteur.getInformationEmise().iemeElement(2));
+		//System.err.println("DEBUG: Recepteur a émis " + recepteur.getInformationEmise().nbElements() + " bits");
+		//System.err.println("DEBUG: Premiers bits recepteur: " + recepteur.getInformationEmise().iemeElement(0) + " " + recepteur.getInformationEmise().iemeElement(1) + " " + recepteur.getInformationEmise().iemeElement(2));
         // recepteur émet vers destination
 
-        System.out.println(destination.getInformationRecue());
+        //System.out.println(destination.getInformationRecue());
 
     }
    
@@ -347,9 +347,9 @@ public class Simulateur {
 		int error = 0;
 
 		// Debug
-		System.err.println("DEBUG: Taille émise = " + infoEmise.nbElements());
-		System.err.println("DEBUG: Taille reçue = " + infoRecue.nbElements());
-		System.err.println("DEBUG: Comparaison sur " + size + " bits");
+		//System.err.println("DEBUG: Taille émise = " + infoEmise.nbElements());
+		//System.err.println("DEBUG: Taille reçue = " + infoRecue.nbElements());
+		//System.err.println("DEBUG: Comparaison sur " + size + " bits");
 
 		for (int i = 0; i < size; i++) {
 			Boolean emis = infoEmise.iemeElement(i);
@@ -357,11 +357,11 @@ public class Simulateur {
 			if (!emis.equals(recu)) {
 				error++;
 				if (error <= 5) { // Afficher les 5 premières erreurs
-					System.err.println("DEBUG: Erreur bit " + i + " : émis=" + emis + " reçu=" + recu);
+					//System.err.println("DEBUG: Erreur bit " + i + " : émis=" + emis + " reçu=" + recu);
 				}
 			}
 		}
-		System.err.println("DEBUG: Nombre d'erreurs = " + error);
+		//System.err.println("DEBUG: Nombre d'erreurs = " + error);
 		return (float) error / size;
 	}
 

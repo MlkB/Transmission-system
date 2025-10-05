@@ -1,5 +1,6 @@
 package sources;
 
+import destinations.DestinationInterface;
 import emmetteurs.Emetteur;
 import information.Information;
 import visualisations.SondeLogique;
@@ -36,16 +37,13 @@ public class SourceFixe extends Source {
 	}
 
 	@Override
-	public void connecter(Emetteur emetteur) {
-		destinationsConnectees.add(emetteur);
+	public void connecter(DestinationInterface destination) {
+		destinationsConnectees.add(destination);
 	}
 
-	/**
-	 * permet de connecter la source à une sonde logique
-	 * @param sondeSource la sonde logique à connecter
-	 */
-	public void connecterSonde(SondeLogique sondeSource) {
-		destinationsConnectees.add(sondeSource);
+	@Override
+	public void connecter(Emetteur emetteur) {
+		destinationsConnectees.add(emetteur);
 	}
 
 }
