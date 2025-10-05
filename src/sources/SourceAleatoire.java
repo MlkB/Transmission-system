@@ -51,6 +51,7 @@ public class SourceAleatoire extends Source {
 	 * le message aléatoire est soit pseudo-aléatoire, soit généré selon la graine fixée par le paramètre seed
 	 * @throws InformationNonConformeException si un élément du message n'est pas un booléen
 	 */
+	@SuppressWarnings("unchecked")
 	public void generer() throws InformationNonConformeException{
 			if (this.length == null) this.length = 100;
 			if (this.seed == null) {
@@ -80,11 +81,13 @@ public class SourceAleatoire extends Source {
 		}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public void connecter(DestinationInterface destination) {
 		destinationsConnectees.add(destination);
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public void connecter(Emetteur emetteur) {
 		destinationsConnectees.add(emetteur);
 	}

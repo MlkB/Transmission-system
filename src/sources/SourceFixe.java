@@ -23,6 +23,7 @@ public class SourceFixe extends Source {
 	 * le paramètre message doit être sous la forme d'une chaîne de caractères représentant un message
 	 * binaire
 	 */
+	@SuppressWarnings("unchecked")
 	public void generer(String message) {
 		Information<Boolean> informationBinaire = new Information<Boolean>();
         for (int j = 0; j < message.length(); j++) {
@@ -37,11 +38,13 @@ public class SourceFixe extends Source {
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public void connecter(DestinationInterface destination) {
 		destinationsConnectees.add(destination);
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public void connecter(Emetteur emetteur) {
 		destinationsConnectees.add(emetteur);
 	}

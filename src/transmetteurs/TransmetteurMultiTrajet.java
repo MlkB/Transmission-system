@@ -71,6 +71,7 @@ public class TransmetteurMultiTrajet<E> extends Transmetteur {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void connecter(DestinationInterface destination) {
         destinationsConnectees.add(destination);
     }
@@ -81,6 +82,7 @@ public class TransmetteurMultiTrajet<E> extends Transmetteur {
      * @throws InformationNonConformeException si l'information est nulle
      */
     @Override
+    @SuppressWarnings("unchecked")
     public void recevoir(Information information) throws InformationNonConformeException {
         if (information == null) {
             throw new InformationNonConformeException("L'information est nulle");
@@ -112,6 +114,7 @@ public class TransmetteurMultiTrajet<E> extends Transmetteur {
      * Génère le signal avec trajets multiples et bruit gaussien
      * Formule : r(t) = s(t) + Somme(α_k*s(t-tau_k)) + b(t)
      */
+    @SuppressWarnings("unchecked")
     private void genererSignalMultiTrajet() {
         this.informationEmise = new Information<Float>();
         calculerVariance();
@@ -150,6 +153,7 @@ public class TransmetteurMultiTrajet<E> extends Transmetteur {
      * @throws InformationNonConformeException si un problème survient lors de l'émission
      */
     @Override
+    @SuppressWarnings("unchecked")
     public void emettre() throws InformationNonConformeException {
         genererSignalMultiTrajet();
 

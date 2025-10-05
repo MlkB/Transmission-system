@@ -115,6 +115,7 @@ public class Emetteur<T> extends Source<Float> implements DestinationInterface <
      * @throws InformationNonConformeException si l'information est nulle
      */
     @Override
+    @SuppressWarnings("unchecked")
     public void recevoir(Information<T> information) throws InformationNonConformeException {
             if (information == null) {
                 throw new InformationNonConformeException("L'information est vide");
@@ -130,15 +131,17 @@ public class Emetteur<T> extends Source<Float> implements DestinationInterface <
      * @return informationRecue
      */
     @Override
-    public Information getInformationRecue() {
-            return this.informationRecue;
-      }
+    @SuppressWarnings("unchecked")
+    public Information<T> getInformationRecue() {
+        return (Information<T>) this.informationRecue;
+    }
 
     /**
      * permet de connecter l'émetteur au transmetteur
      * @param transmetteurLogique donne le transmetteur logique auquel
      *                            l'émetteur doit se connecter
      */
+    @SuppressWarnings("unchecked")
     public void connecter(Transmetteur transmetteurLogique) {
         // Vérifier si déjà connecté
         if (!destinationsConnectees.contains(transmetteurLogique)) {
@@ -147,16 +150,17 @@ public class Emetteur<T> extends Source<Float> implements DestinationInterface <
     }
 
 
-         @Override
-         public void connecter(Emetteur emetteur) {
+     @Override
+     public void connecter(Emetteur emetteur) {
 
-            throw new UnsupportedOperationException("Unimplemented method 'connecter'");
-         }
+        throw new UnsupportedOperationException("Unimplemented method 'connecter'");
+     }
 
     /**
      * permet de connecter l'émetteur à une sonde
      * @param sonde la sonde à connecter
      */
+    @SuppressWarnings("unchecked")
     public void connecterSonde(Sonde sonde) {
             // Vérifier si déjà connecté
             if (!destinationsConnectees.contains(sonde)) {

@@ -30,7 +30,7 @@ public class DestinationFinale<T> extends Destination<T> {
             throw new InformationNonConformeException("Information reçue est nulle !");
         }
 		this.informationRecue = information;
-		System.out.println("DestinationFinale: reçu " + information);
+		//System.out.println("DestinationFinale: reçu " + information);
 	}
 
 	/**

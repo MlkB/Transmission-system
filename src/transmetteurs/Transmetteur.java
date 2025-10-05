@@ -67,6 +67,7 @@ public abstract  class Transmetteur <R,E> implements  DestinationInterface <R>, 
      * retourne l'information analogique émise par le transmetteur
      * @return this.informationEmise l'information emise de type Float
      */
+    @SuppressWarnings("unchecked")
     public Information <Float>  getInformationAnalogEmise() {
     	return (Information<Float>) this.informationEmise;
     }

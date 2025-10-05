@@ -73,6 +73,7 @@ public class TransmetteurImparfait<E> extends Transmetteur {
      * @param destination  la destination à connecter
      */
     @Override
+    @SuppressWarnings("unchecked")
     public void connecter(DestinationInterface destination) {
 		destinationsConnectees.add(destination);
     }
@@ -83,6 +84,7 @@ public class TransmetteurImparfait<E> extends Transmetteur {
      * @throws InformationNonConformeException si l'information est nulle
      */
     @Override
+    @SuppressWarnings("unchecked")
     public void recevoir(Information information) throws InformationNonConformeException {
         if (information == null) {
             throw new InformationNonConformeException("L'information est nulle");
@@ -121,6 +123,7 @@ public class TransmetteurImparfait<E> extends Transmetteur {
      * génère le bruit blanc additif gaussien et
      * l'ajoute au signal reçu pour créer le signal émis
      */
+    @SuppressWarnings("unchecked")
     public void genererBBAG() {
         this.informationEmise = new Information<Float>();
         calculerVariance();
@@ -138,6 +141,7 @@ public class TransmetteurImparfait<E> extends Transmetteur {
      * @throws InformationNonConformeException si l'information n'est pas conforme
      */
     @Override
+    @SuppressWarnings("unchecked")
     public void emettre() throws InformationNonConformeException {
         Iterator<DestinationInterface<E>> it = destinationsConnectees.iterator();
         genererBBAG();

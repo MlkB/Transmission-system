@@ -84,7 +84,7 @@ public class Recepteur extends Transmetteur<Float, Boolean> implements Destinati
         }
 
         this.informationEmise = new Information<>(bits);
-        System.out.println("Recepteur: bits décodés = " + Arrays.toString(bits));
+        //System.out.println("Recepteur: bits décodés = " + Arrays.toString(bits));
 
         /* On émet vers la ou les destinations connectée(s) */
         for(DestinationInterface<Boolean> destination : destinationsConnectees){

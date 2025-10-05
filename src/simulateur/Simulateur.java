@@ -100,7 +100,8 @@ public class Simulateur {
      * @throws InformationNonConformeException si l'information générée ou transmise ne correspond pas
 	 *         au type ou à la forme attendue
      *
-     */   
+     */
+	@SuppressWarnings("unchecked")
     public  Simulateur(String [] args) throws ArgumentsException, InformationNonConformeException {
     	// analyser et récupérer les arguments   	
     	analyseArguments(args);
