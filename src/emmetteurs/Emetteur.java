@@ -167,8 +167,6 @@ public class Emetteur<T> extends Source<Float> implements DestinationInterface <
                 destinationsConnectees.add(sonde);
             }
          }
-
-        
        
     }
 

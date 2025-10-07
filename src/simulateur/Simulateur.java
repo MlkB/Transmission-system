@@ -10,6 +10,8 @@ import information.InformationNonConformeException;
 import visualisations.SondeLogique;
 import visualisations.SondeAnalogique;
 import visualisations.VueCourbe;
+import emmetteurs.CodageEmission;
+import transmetteurs.DecodageReception;
 
 
 import java.util.ArrayList;
@@ -84,6 +86,9 @@ public class Simulateur {
     /** Paramètres du canal à trajets multiples */
     private List<Trajet> trajetsMultiples = null;
 
+	/** booléen disant si on utilise un codeur ou non */
+	private Boolean codeur = false;
+
     private Emetteur emetteur = null;
     private Recepteur recepteur = null;
    	
@@ -105,7 +110,6 @@ public class Simulateur {
     public  Simulateur(String [] args) throws ArgumentsException, InformationNonConformeException {
     	// analyser et récupérer les arguments   	
     	analyseArguments(args);
-      
     	
     	// 1. Create the correct source based on the arguments
         if (messageAleatoire) {
@@ -150,28 +154,44 @@ public class Simulateur {
             }
         }
 
-        // Créer émetteur et récepteur (toujours nécessaires pour la transmission analogique)
+		// Toujours créer les maillons de base
 		emetteur = new Emetteur(form, nEch);
-        recepteur = new Recepteur(nEch, 0f, form);
-        destination = new DestinationFinale();
+		recepteur = new Recepteur(nEch, 0f, form);
+		destination = new DestinationFinale();
 
-        SondeLogique sondeSource = new SondeLogique("source",100 );
-        SondeAnalogique sondeEmetteur = new SondeAnalogique("émetteur");
-        SondeAnalogique sondeTransmetteur = new SondeAnalogique("transmetteur");
-        SondeLogique sondeRecepteur = new SondeLogique("récepteur", 100);
 
-        source.connecter(emetteur);
-        emetteur.connecter(transmetteurLogique);
-        transmetteurLogique.connecter(recepteur);
-        recepteur.connecter(destination);
-        
-        if (affichage) {
+		if (codeur) {
+			CodageEmission codeur = new CodageEmission();
+			DecodageReception decodeur = new DecodageReception();
 
-            source.connecter(sondeSource);
-            emetteur.connecterSonde(sondeEmetteur);
-            transmetteurLogique.connecter(sondeTransmetteur);
-            recepteur.connecter(sondeRecepteur);
-        }
+			// Chaîne avec codage
+			source.connecter(codeur);
+			codeur.connecter(emetteur);
+			emetteur.connecter(transmetteurLogique);
+			transmetteurLogique.connecter(recepteur);
+			recepteur.connecter(decodeur);
+			decodeur.connecter(destination);
+
+			if (affichage) {
+				source.connecter(new SondeLogique("source", 100));
+				emetteur.connecterSonde(new SondeAnalogique("émetteur"));
+				transmetteurLogique.connecter(new SondeAnalogique("transmetteur"));
+				decodeur.connecter(new SondeLogique("récepteur2", 100));
+			}
+		} else {
+			// Chaîne sans codage (ancienne version)
+			source.connecter(emetteur);
+			emetteur.connecter(transmetteurLogique);
+			transmetteurLogique.connecter(recepteur);
+			recepteur.connecter(destination);
+
+			if (affichage) {
+				source.connecter(new SondeLogique("source", 100));
+				emetteur.connecterSonde(new SondeAnalogique("émetteur"));
+				transmetteurLogique.connecter(new SondeAnalogique("transmetteur"));
+				recepteur.connecter(new SondeLogique("récepteur", 100));
+			}
+		}
     }
    
    
@@ -201,8 +221,6 @@ public class Simulateur {
     		if (args[i].matches("-s")){
     			affichage = true;
     		}
-
-
 
     		else if (args[i].matches("-seed")) {
     			aleatoireAvecGerme = true;
@@ -286,6 +304,9 @@ public class Simulateur {
 				}
 			}
 
+			else if (args[i].matches("-codeur")) {
+				codeur = true;
+			}
 
 
     		else throw new ArgumentsException("Option invalide :"+ args[i]);
@@ -316,7 +337,7 @@ public class Simulateur {
 		//System.err.println("DEBUG: Signal transmetteur premiers échantillons: " + transmetteurLogique.getInformationAnalogEmise().iemeElement(0) + " " + transmetteurLogique.getInformationAnalogEmise().iemeElement(1) + " " + transmetteurLogique.getInformationAnalogEmise().iemeElement(2));
 		//System.err.println("DEBUG: Signal emetteur premiers échantillons: " + emetteur.getInformationEmise().iemeElement(0) + " " + emetteur.getInformationEmise().iemeElement(1) + " " + emetteur.getInformationEmise().iemeElement(2));
         recepteur.recevoir(transmetteurLogique.getInformationAnalogEmise());
-        recepteur.emettre();
+        //recepteur.emettre();
 		//System.err.println("DEBUG: Recepteur a émis " + recepteur.getInformationEmise().nbElements() + " bits");
 		//System.err.println("DEBUG: Premiers bits recepteur: " + recepteur.getInformationEmise().iemeElement(0) + " " + recepteur.getInformationEmise().iemeElement(1) + " " + recepteur.getInformationEmise().iemeElement(2));
         // recepteur émet vers destination

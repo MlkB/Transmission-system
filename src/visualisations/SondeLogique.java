@@ -9,7 +9,7 @@ import information.Information;
  * @author prou
  */
 public class SondeLogique extends Sonde <Boolean> {
-   
+
     /** le nombre de pixels en largeur pour un élément d'information
      * Boolean à afficher dans la fenêtre */
     private int nbPixels;
@@ -22,6 +22,7 @@ public class SondeLogique extends Sonde <Boolean> {
     public SondeLogique(String nom, int nbPixels) {
         super(nom);
         this.nbPixels = nbPixels;
+        System.err.println("DEBUG: Creating SondeLogique for " + nom + " @" + this);
     }
     
     public void recevoir (Information <Boolean> information) { 
