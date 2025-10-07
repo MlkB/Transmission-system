@@ -187,13 +187,85 @@ public class AnalyseTEB {
     }
 
     /**
-     * Méthode appelée par Simulateur pour générer les 3 graphiques d'analyse TEB
+     * Analyse 4 : TEB en fonction du SNR (pour canal sans multi-trajet)
+     * @throws Exception si une erreur survient lors de l'exécution du simulateur
+     */
+    public static void analyserSNR() throws Exception {
+        System.out.println("=== Analyse TEB = f(SNR) ===");
+
+        int nbPoints = 10;  // SNR de 0 à 9 dB
+        float[] valeursTEB = new float[nbPoints];
+
+        // Faire varier le SNR de 0 à 9 dB
+        for (int i = 0; i < nbPoints; i++) {
+            float snrCourant = (float) i;
+
+            StringBuilder args = new StringBuilder();
+            args.append("-mess ").append(nbBitsMessage);
+            args.append(" -form ").append(forme);
+            args.append(" -nbEch ").append(nbEch);
+            if (seed != null) {
+                args.append(" -seed ").append(seed);
+            }
+            args.append(" -snrpb ").append(snrCourant);
+
+            Simulateur sim = new Simulateur(args.toString().split("\\s+"));
+            sim.execute();
+            float teb = sim.calculTauxErreurBinaire();
+
+            valeursTEB[i] = teb;
+            System.out.println(String.format("SNR=%.1f dB => TEB=%.6f", snrCourant, teb));
+        }
+
+        VueCourbe courbe4 = new VueCourbe(valeursTEB, "TEB = f(SNR en dB)");
+        try { Thread.sleep(200); } catch (Exception e) {}
+        System.out.println("Graphique TEB vs SNR généré\n");
+    }
+
+    /**
+     * Analyse 5 : TEB en fonction du nombre d'échantillons par bit
+     * @throws Exception si une erreur survient lors de l'exécution du simulateur
+     */
+    public static void analyserNbEch() throws Exception {
+        System.out.println("=== Analyse TEB = f(nbEch) ===");
+
+        int nbPoints = 10;  // nbEch de 10 à 100
+        float[] valeursTEB = new float[nbPoints];
+
+        // Faire varier nbEch de 10 à 100 par pas de 10
+        for (int i = 0; i < nbPoints; i++) {
+            int nbEchCourant = 10 + i * 10;
+
+            StringBuilder args = new StringBuilder();
+            args.append("-mess ").append(nbBitsMessage);
+            args.append(" -form ").append(forme);
+            args.append(" -nbEch ").append(nbEchCourant);
+            if (seed != null) {
+                args.append(" -seed ").append(seed);
+            }
+            args.append(" -snrpb ").append(snrDb);
+
+            Simulateur sim = new Simulateur(args.toString().split("\\s+"));
+            sim.execute();
+            float teb = sim.calculTauxErreurBinaire();
+
+            valeursTEB[i] = teb;
+            System.out.println(String.format("nbEch=%d => TEB=%.6f", nbEchCourant, teb));
+        }
+
+        VueCourbe courbe5 = new VueCourbe(valeursTEB, "TEB = f(nbEch)");
+        try { Thread.sleep(200); } catch (Exception e) {}
+        System.out.println("Graphique TEB vs nbEch généré\n");
+    }
+
+    /**
+     * Méthode appelée par Simulateur pour générer les graphiques d'analyse TEB
      * @param nbBits nombre de bits du message
      * @param nbEchantillons nombre d'échantillons par bit
      * @param snr rapport signal/bruit en dB
      * @param forme forme du signal (RZ, NRZ, NRZT)
      * @param seedValue seed pour reproductibilité (peut être null)
-     * @param trajets liste des trajets définis par l'utilisateur
+     * @param trajets liste des trajets définis par l'utilisateur (peut être null)
      */
     public static void genererGraphiques(int nbBits, int nbEchantillons, float snr, String forme, Integer seedValue, List<Trajet> trajets) {
         try {
@@ -209,14 +281,24 @@ public class AnalyseTEB {
             System.out.println("Paramètres: mess=" + nbBits + ", nbEch=" + nbEchantillons +
                              ", snr=" + snr + "dB, forme=" + forme);
 
-            // Lancer les 3 analyses avec un délai pour laisser l'interface se rafraîchir
-            analyserNbTrajets();
-            Thread.sleep(500);  // Attendre 500ms
-            analyserAlpha();
-            Thread.sleep(500);
-            analyserTau();
+            // Choisir les analyses en fonction de la présence de multi-trajet
+            if (trajets != null && !trajets.isEmpty()) {
+                // Analyses pour canal à trajets multiples
+                System.out.println("Mode: Canal à trajets multiples");
+                analyserNbTrajets();
+                Thread.sleep(500);
+                analyserAlpha();
+                Thread.sleep(500);
+                analyserTau();
+            } else {
+                // Analyses pour canal simple (avec ou sans bruit)
+                System.out.println("Mode: Canal simple");
+                analyserSNR();
+                Thread.sleep(500);
+                analyserNbEch();
+            }
 
-            System.out.println("=== 3 graphiques TEB générés ===\n");
+            System.out.println("=== Graphiques TEB générés ===\n");
 
         } catch (Exception e) {
             System.err.println("Erreur lors de l'analyse TEB : " + e.getMessage());
