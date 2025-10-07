@@ -15,6 +15,7 @@ import transmetteurs.DecodageReception;
 
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import emmetteurs.Emetteur;
 
@@ -373,9 +374,12 @@ public class Simulateur {
 		//System.err.println("DEBUG: Taille reçue = " + infoRecue.nbElements());
 		//System.err.println("DEBUG: Comparaison sur " + size + " bits");
 
+		// Use iterators for O(n) performance instead of iemeElement which is O(n²) with LinkedList
+		Iterator<Boolean> iterEmis = infoEmise.iterator();
+		Iterator<Boolean> iterRecu = infoRecue.iterator();
 		for (int i = 0; i < size; i++) {
-			Boolean emis = infoEmise.iemeElement(i);
-			Boolean recu = infoRecue.iemeElement(i);
+			Boolean emis = iterEmis.next();
+			Boolean recu = iterRecu.next();
 			if (!emis.equals(recu)) {
 				error++;
 				if (error <= 5) { // Afficher les 5 premières erreurs

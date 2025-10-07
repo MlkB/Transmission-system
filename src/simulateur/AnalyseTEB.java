@@ -29,12 +29,6 @@ public class AnalyseTEB {
         // rien à initialiser pour l'instant
     }
 
-    /**
-     * Analyse 1 : TEB en fonction du nombre de trajets
-     * On ajoute progressivement les trajets définis par l'utilisateur
-     * @throws Exception si une erreur survient lors de l'exécution du simulateur
-     *                   ou lors de l'analyse des résultats.
-     */
     public static void analyserNbTrajets() throws Exception {
         System.out.println("=== Analyse TEB = f(NbTrajets) ===");
 
@@ -196,12 +190,15 @@ public class AnalyseTEB {
         int nbPoints = 10;  // SNR de 0 à 9 dB
         float[] valeursTEB = new float[nbPoints];
 
+        // Utiliser au moins 5000 bits pour une mesure fiable du TEB
+        int nbBitsAnalyse = Math.max(5000, nbBitsMessage);
+
         // Faire varier le SNR de 0 à 9 dB
         for (int i = 0; i < nbPoints; i++) {
             float snrCourant = (float) i;
 
             StringBuilder args = new StringBuilder();
-            args.append("-mess ").append(nbBitsMessage);
+            args.append("-mess ").append(nbBitsAnalyse);
             args.append(" -form ").append(forme);
             args.append(" -nbEch ").append(nbEch);
             if (seed != null) {
@@ -232,25 +229,40 @@ public class AnalyseTEB {
         int nbPoints = 10;  // nbEch de 10 à 100
         float[] valeursTEB = new float[nbPoints];
 
+        // Cible: environ 100000 échantillons totaux pour garder le temps de calcul constant
+        int cibleEchantillons = 100000;
+
+        // Référence pour garder la variance de bruit constante
+        int nbEchReference = 30;  // valeur de référence
+
         // Faire varier nbEch de 10 à 100 par pas de 10
         for (int i = 0; i < nbPoints; i++) {
             int nbEchCourant = 10 + i * 10;
 
+            // Ajuster le nombre de bits pour garder le nombre d'échantillons constant
+            // Minimum 1000 bits pour avoir des statistiques fiables
+            int nbBitsAnalyse = Math.max(1000, cibleEchantillons / nbEchCourant);
+
+            // Ajuster le SNR pour garder la variance de bruit constante
+            // variance = (puissanceSignal × nEch) / SNR_b
+            // Pour variance constante: SNR_b doit être proportionnel à nEch
+            float snrAjuste = snrDb + 10.0f * (float)Math.log10((double)nbEchCourant / nbEchReference);
+
             StringBuilder args = new StringBuilder();
-            args.append("-mess ").append(nbBitsMessage);
+            args.append("-mess ").append(nbBitsAnalyse);
             args.append(" -form ").append(forme);
             args.append(" -nbEch ").append(nbEchCourant);
             if (seed != null) {
                 args.append(" -seed ").append(seed);
             }
-            args.append(" -snrpb ").append(snrDb);
+            args.append(" -snrpb ").append(snrAjuste);
 
             Simulateur sim = new Simulateur(args.toString().split("\\s+"));
             sim.execute();
             float teb = sim.calculTauxErreurBinaire();
 
             valeursTEB[i] = teb;
-            System.out.println(String.format("nbEch=%d => TEB=%.6f", nbEchCourant, teb));
+            System.out.println(String.format("nbEch=%d (%d bits) => TEB=%.6f", nbEchCourant, nbBitsAnalyse, teb));
         }
 
         VueCourbe courbe5 = new VueCourbe(valeursTEB, "TEB = f(nbEch)");

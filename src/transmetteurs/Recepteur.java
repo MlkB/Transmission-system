@@ -67,15 +67,15 @@ public class Recepteur extends Transmetteur<Float, Boolean> implements Destinati
 
         Boolean[] bits = new Boolean[nbSymbols];
 
+        // Use iterator for O(n) performance instead of iemeElement which is O(n²) with LinkedList
+        java.util.Iterator<Float> iter = this.informationRecue.iterator();
+
         for(int i = 0; i < nbSymbols; i++) {
             float moy = 0f;
 
-            int debut = i * nbEch;
-            int fin = (i + 1) * nbEch;
-
-            // calcul de la moyenne sur le symbole
-            for (int j = debut; j < fin; j++) {
-                moy += this.informationRecue.iemeElement(j);
+            // calcul de la moyenne sur nbEch échantillons
+            for (int j = 0; j < nbEch; j++) {
+                moy += iter.next();
             }
             moy /= nbEch;
 

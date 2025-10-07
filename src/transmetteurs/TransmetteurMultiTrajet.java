@@ -104,10 +104,16 @@ public class TransmetteurMultiTrajet<E> extends Transmetteur {
 
     /**
      * Calcule la variance du bruit gaussien à partir du SNR
+     *
+     * Pour SNR par bit avec moyennage au récepteur :
+     * - Utilise la puissance du signal AVANT multipath (signal direct uniquement)
+     * - Applique le facteur nbEch pour compenser le moyennage au récepteur
+     * - variance = (puissanceSignal × nEch) / SNR_b
      */
     private void calculerVariance() {
         calculerPuissanceSignal();
-        this.variance = puissanceSignal / (float) Math.pow(10, SNRdB / 10.0);
+        float snrLineaire = (float) Math.pow(10, SNRdB / 10.0);
+        this.variance = (puissanceSignal * nbEch) / snrLineaire;
     }
 
     /**
