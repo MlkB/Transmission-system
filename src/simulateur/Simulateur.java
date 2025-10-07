@@ -131,14 +131,14 @@ public class Simulateur {
     	
         // Création du transmetteur selon les options
         if (trajetsMultiples != null && !trajetsMultiples.isEmpty()) {
-            // Canal à trajets multiples et bruité
-            if (SNRpB == null) {
-                throw new ArgumentsException("Un SNR doit être spécifié avec -snrpb pour utiliser -ti");
-            }
+            // Canal à trajets multiples (avec ou sans bruit)
+            // Si SNR non spécifié, utiliser SNR très élevé (1000 dB) = canal parfait
+            float snrEffectif = (SNRpB != null) ? SNRpB : 1000.0f;
+
             if (aleatoireAvecGerme && seed != null) {
-                transmetteurLogique = new TransmetteurMultiTrajet<>(trajetsMultiples, SNRpB, nEch, seed);
+                transmetteurLogique = new TransmetteurMultiTrajet<>(trajetsMultiples, snrEffectif, nEch, seed);
             } else {
-                transmetteurLogique = new TransmetteurMultiTrajet<>(trajetsMultiples, SNRpB, nEch);
+                transmetteurLogique = new TransmetteurMultiTrajet<>(trajetsMultiples, snrEffectif, nEch);
             }
         }
         else if (SNRpB == null) {
