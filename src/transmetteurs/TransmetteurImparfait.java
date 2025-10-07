@@ -107,16 +107,22 @@ public class TransmetteurImparfait<E> extends Transmetteur {
     }
 
     /**
-     * Calcule la variance du bruit gaussien à ajouter pour atteindre le SNR/bit demandé :
-     * {@code E_b ≈ puissanceSignal / nEch}, puis {@code σ² = E_b / 10^(SNRdB/10)}.
+     * Calcule la variance du bruit gaussien à ajouter pour atteindre le SNR/bit demandé.
+     *
+     * Pour SNR par bit avec moyennage au récepteur :
+     * - La puissance du signal par échantillon est puissanceSignal
+     * - Au récepteur, on moyenne nEch échantillons, ce qui améliore le SNR d'un facteur nEch
+     * - Pour avoir SNR_b au niveau bit après moyennage :
+     *   σ²_échantillon = puissanceSignal / (SNR_b / nEch) = (puissanceSignal × nEch) / SNR_b
+     *
      * Met à jour {@code variance}.
      */
 
     public void calculerVariance() {
         calculPuissanceSignal();
-        // estimate signal power per bit instead of per sample
-        float bitsignal = puissanceSignal / nEch; 
-        this.variance = bitsignal / (float) Math.pow(10, SNRdB / 10.0);
+        // Variance par échantillon pour obtenir SNR_b après moyennage de nEch échantillons
+        float snrLineaire = (float) Math.pow(10, SNRdB / 10.0);
+        this.variance = (puissanceSignal * nEch) / snrLineaire;
     }
 
     /**
