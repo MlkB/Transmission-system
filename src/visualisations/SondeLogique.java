@@ -13,7 +13,10 @@ public class SondeLogique extends Sonde <Boolean> {
     /** le nombre de pixels en largeur pour un élément d'information
      * Boolean à afficher dans la fenêtre */
     private int nbPixels;
-   
+
+    /** la fenêtre d'affichage de la courbe */
+    private VueCourbe vueCourbe;
+
     /**
      * pour construire une sonde logique
      * @param nom  le nom de la fenêtre d'affichage
@@ -22,10 +25,11 @@ public class SondeLogique extends Sonde <Boolean> {
     public SondeLogique(String nom, int nbPixels) {
         super(nom);
         this.nbPixels = nbPixels;
+        this.vueCourbe = null;
         System.err.println("DEBUG: Creating SondeLogique for " + nom + " @" + this);
     }
-    
-    public void recevoir (Information <Boolean> information) { 
+
+    public void recevoir (Information <Boolean> information) {
 	informationRecue = information;
 	int nbElements = information.nbElements();
 	boolean [] table = new boolean[nbElements];
@@ -34,6 +38,9 @@ public class SondeLogique extends Sonde <Boolean> {
             table[i] = b;
             i++;
 	}
-      	new VueCourbe (table,  nbPixels, nom); 
+	// Créer la fenêtre seulement la première fois
+	if (vueCourbe == null) {
+      	    vueCourbe = new VueCourbe (table,  nbPixels, nom);
+	}
     }
 }
