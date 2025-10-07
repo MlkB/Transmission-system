@@ -157,7 +157,12 @@ public class Simulateur {
 
 		// Toujours créer les maillons de base
 		emetteur = new Emetteur(form, nEch);
-		recepteur = new Recepteur(nEch, 0f, form);
+
+		// Seuil de décision dépend du codage:
+		// - RZ: pulse dans le tiers central, moyenne pour bit=1 est 1/3, seuil = 1/6
+		// - NRZ et NRZT: signaux ±1, seuil = 0.0
+		float seuil = "RZ".equalsIgnoreCase(form) ? (1.0f / 6.0f) : 0.0f;
+		recepteur = new Recepteur(nEch, seuil, form);
 		destination = new DestinationFinale();
 
 

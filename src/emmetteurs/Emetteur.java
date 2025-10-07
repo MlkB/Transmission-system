@@ -65,10 +65,22 @@ public class Emetteur<T> extends Source<Float> implements DestinationInterface <
 
             } else if ("RZ".equalsIgnoreCase(typeCodage)) {
                 for (Boolean bit : informationRecue) {
-                    for (int i = 0; i < nbEch-1; i++) {
-                        informationGeneree.add(bit ? 1.0f : -1.0f);
+                    int third = nbEch / 3;
+
+                    // Premier tiers: toujours 0
+                    for (int i = 0; i < third; i++) {
+                        informationGeneree.add(0.0f);
                     }
-                    informationGeneree.add(0.0f); // Retour à zéro
+
+                    // Deuxième tiers: 1 si bit=true, 0 si bit=false
+                    for (int i = third; i < 2 * third; i++) {
+                        informationGeneree.add(bit ? 1.0f : 0.0f);
+                    }
+
+                    // Dernier tiers: toujours 0
+                    for (int i = 2 * third; i < nbEch; i++) {
+                        informationGeneree.add(0.0f);
+                    }
                 }
             } else if ("NRZT".equalsIgnoreCase(typeCodage)) {
                 for (int b = 0; b < informationRecue.nbElements(); b++) {
