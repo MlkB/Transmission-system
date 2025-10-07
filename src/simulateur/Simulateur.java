@@ -90,6 +90,9 @@ public class Simulateur {
 	/** booléen disant si on utilise un codeur ou non */
 	private Boolean codeur = false;
 
+	/** booléen disant si on veut analyser l'efficacité du codeur */
+	private Boolean analyseCodeur = false;
+
     private Emetteur emetteur = null;
     private Recepteur recepteur = null;
    	

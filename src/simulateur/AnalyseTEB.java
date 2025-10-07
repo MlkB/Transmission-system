@@ -271,6 +271,68 @@ public class AnalyseTEB {
     }
 
     /**
+     * Analyse 6 : TEB en fonction du SNR avec et sans codeur/décodeur
+     * Compare l'efficacité du codage avec redondance pour la correction d'erreurs
+     * @throws Exception si une erreur survient lors de l'exécution du simulateur
+     */
+    public static void analyserCodeur() throws Exception {
+        System.out.println("=== Analyse TEB avec/sans Codeur = f(SNR) ===");
+
+        int nbPoints = 5;  // SNR de 0 à 8 dB par pas de 2
+        float[] valeursTEB_SansCodeur = new float[nbPoints];
+        float[] valeursTEB_AvecCodeur = new float[nbPoints];
+
+        // Utiliser le nombre de bits du message comme les autres analyses
+        int nbBitsAnalyse = nbBitsMessage;
+
+        // Faire varier le SNR de 0 à 8 dB par pas de 2
+        for (int i = 0; i < nbPoints; i++) {
+            float snrCourant = (float) (i * 2);
+
+            // Test SANS codeur
+            StringBuilder argsSans = new StringBuilder();
+            argsSans.append("-mess ").append(nbBitsAnalyse);
+            argsSans.append(" -form ").append(forme);
+            argsSans.append(" -nbEch ").append(nbEch);
+            if (seed != null) {
+                argsSans.append(" -seed ").append(seed);
+            }
+            argsSans.append(" -snrpb ").append(snrCourant);
+
+            Simulateur simSans = new Simulateur(argsSans.toString().split("\\s+"));
+            simSans.execute();
+            float tebSans = simSans.calculTauxErreurBinaire();
+            valeursTEB_SansCodeur[i] = tebSans;
+
+            // Test AVEC codeur
+            StringBuilder argsAvec = new StringBuilder();
+            argsAvec.append("-mess ").append(nbBitsAnalyse);
+            argsAvec.append(" -form ").append(forme);
+            argsAvec.append(" -nbEch ").append(nbEch);
+            if (seed != null) {
+                argsAvec.append(" -seed ").append(seed);
+            }
+            argsAvec.append(" -snrpb ").append(snrCourant);
+            argsAvec.append(" -codeur");
+
+            Simulateur simAvec = new Simulateur(argsAvec.toString().split("\\s+"));
+            simAvec.execute();
+            float tebAvec = simAvec.calculTauxErreurBinaire();
+            valeursTEB_AvecCodeur[i] = tebAvec;
+
+            System.out.println(String.format("SNR=%.1f dB => Sans codeur: TEB=%.6f | Avec codeur: TEB=%.6f",
+                                            snrCourant, tebSans, tebAvec));
+        }
+
+        // Créer deux graphiques: un pour chaque configuration
+        VueCourbe courbeSans = new VueCourbe(valeursTEB_SansCodeur, "TEB sans codeur = f(SNR en dB)");
+        try { Thread.sleep(200); } catch (Exception e) {}
+        VueCourbe courbeAvec = new VueCourbe(valeursTEB_AvecCodeur, "TEB avec codeur = f(SNR en dB)");
+        try { Thread.sleep(200); } catch (Exception e) {}
+        System.out.println("Graphiques TEB avec/sans codeur générés\n");
+    }
+
+    /**
      * Méthode appelée par Simulateur pour générer les graphiques d'analyse TEB
      * @param nbBits nombre de bits du message
      * @param nbEchantillons nombre d'échantillons par bit
@@ -308,6 +370,8 @@ public class AnalyseTEB {
                 analyserSNR();
                 Thread.sleep(500);
                 analyserNbEch();
+                Thread.sleep(500);
+                analyserCodeur();
             }
 
             System.out.println("=== Graphiques TEB générés ===\n");

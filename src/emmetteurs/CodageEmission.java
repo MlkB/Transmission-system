@@ -49,12 +49,12 @@ public class CodageEmission extends Source<Boolean> implements DestinationInterf
 
         for (Boolean bit : information) {
             if (bit) {
-                // 1 -> 010
+                // 1 -> 101 (true, false, true)
                 informationGeneree.add(true);
                 informationGeneree.add(false);
                 informationGeneree.add(true);
             } else {
-                // 0 -> 101
+                // 0 -> 010 (false, true, false)
                 informationGeneree.add(false);
                 informationGeneree.add(true);
                 informationGeneree.add(false);

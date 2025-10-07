@@ -32,25 +32,31 @@ public class DecodageReception extends Transmetteur<Boolean, Boolean> implements
     public void emettre() throws InformationNonConformeException {
         informationGeneree = new Information<>();
 
-        // Ensuite : parcourir les triplets de bits
-        for (int i = 0; i + 2 < informationRecue.nbElements(); i += 3) {
-            boolean b1 = informationRecue.iemeElement(i);
-            boolean b2 = informationRecue.iemeElement(i + 1);
-            boolean b3 = informationRecue.iemeElement(i + 2);
+        // Utiliser un itérateur pour O(n) au lieu de iemeElement qui est O(n²)
+        java.util.Iterator<Boolean> iter = informationRecue.iterator();
 
-            // Appliquer la règle de décodage donnée
-            boolean decoded;
+        // Parcourir les triplets de bits
+        while (iter.hasNext()) {
+            // Lire un triplet (3 bits) - s'assurer qu'on a bien 3 bits disponibles
+            boolean b1 = iter.next();
+            if (!iter.hasNext()) break;  // Triplet incomplet
+            boolean b2 = iter.next();
+            if (!iter.hasNext()) break;  // Triplet incomplet
+            boolean b3 = iter.next();
+
+            // Appliquer la règle de décodage avec correction d'erreur (majorité)
             int triplet = (b1 ? 4 : 0) + (b2 ? 2 : 0) + (b3 ? 1 : 0);
 
+            boolean decoded;
             switch (triplet) {
-                case 0b000: decoded = false; break;
-                case 0b001: decoded = true;  break;
-                case 0b010: decoded = false; break;
-                case 0b011: decoded = false; break;
-                case 0b100: decoded = true;  break;
-                case 0b101: decoded = true;  break;
-                case 0b110: decoded = false; break;
-                case 0b111: decoded = true;  break;
+                case 0b000: decoded = false; break;  // 010 avec 1 erreur
+                case 0b001: decoded = true;  break;  // 101 avec 1 erreur
+                case 0b010: decoded = false; break;  // 010 correct
+                case 0b011: decoded = false; break;  // 010 avec 1 erreur
+                case 0b100: decoded = true;  break;  // 101 avec 1 erreur
+                case 0b101: decoded = true;  break;  // 101 correct
+                case 0b110: decoded = false; break;  // 010 avec 1 erreur
+                case 0b111: decoded = true;  break;  // 101 avec 1 erreur
                 default: decoded = false; // sécurité
             }
 
