@@ -178,6 +178,83 @@ public class TransmetteurImparfait<E> extends Transmetteur {
         }
     }
 
-    
-    
+    /**
+     * Main pour tester et afficher l'histogramme du bruit gaussien généré
+     */
+    public static void main(String[] args) {
+        System.out.println("=== Test de la génération du bruit gaussien ===\n");
+
+        // Créer un transmetteur pour accéder à la méthode de génération
+        TransmetteurImparfait<?> transmetteur = new TransmetteurImparfait<>(30, 10.0f);
+
+        // Générer un grand nombre d'échantillons
+        int nbEchantillons = 100000;
+        double[] echantillons = new double[nbEchantillons];
+
+        for (int i = 0; i < nbEchantillons; i++) {
+            echantillons[i] = transmetteur.genererBruitGaussienFormule();
+        }
+
+        // Calculer moyenne et variance empiriques
+        double somme = 0;
+        for (double val : echantillons) {
+            somme += val;
+        }
+        double moyenne = somme / nbEchantillons;
+
+        double sommeCarres = 0;
+        for (double val : echantillons) {
+            sommeCarres += (val - moyenne) * (val - moyenne);
+        }
+        double variance = sommeCarres / nbEchantillons;
+        double ecartType = Math.sqrt(variance);
+
+        System.out.println("Statistiques sur " + nbEchantillons + " échantillons :");
+        System.out.println("Moyenne empirique : " + moyenne + " (attendu: 0)");
+        System.out.println("Écart-type empirique : " + ecartType + " (attendu: 1)");
+        System.out.println("Variance empirique : " + variance + " (attendu: 1)\n");
+
+        // Construire l'histogramme
+        int nbClasses = 50;
+        double min = -4.0;
+        double max = 4.0;
+        double largeurClasse = (max - min) / nbClasses;
+        int[] histogramme = new int[nbClasses];
+
+        // Compter les échantillons dans chaque classe
+        for (double val : echantillons) {
+            if (val >= min && val < max) {
+                int classe = (int)((val - min) / largeurClasse);
+                if (classe >= 0 && classe < nbClasses) {
+                    histogramme[classe]++;
+                }
+            }
+        }
+
+        // Normaliser l'histogramme pour l'affichage
+        float[] histogrammeNormalise = new float[nbClasses];
+        int maxCount = 0;
+        for (int count : histogramme) {
+            if (count > maxCount) maxCount = count;
+        }
+
+        for (int i = 0; i < nbClasses; i++) {
+            histogrammeNormalise[i] = (float)histogramme[i] / maxCount;
+        }
+
+        // Afficher quelques statistiques de l'histogramme
+        System.out.println("Histogramme (classes de " + min + " à " + max + ") :");
+        for (int i = 0; i < nbClasses; i += 5) {
+            double centreClasse = min + (i + 0.5) * largeurClasse;
+            System.out.printf("[%.2f] : %d échantillons\n", centreClasse, histogramme[i]);
+        }
+
+        // Afficher graphiquement avec VueCourbe
+        System.out.println("\nAffichage graphique de l'histogramme...");
+        visualisations.VueCourbe courbe = new visualisations.VueCourbe(
+            histogrammeNormalise,
+            "Histogramme du bruit gaussien (N(0,1))"
+        );
+    }
+
 }
