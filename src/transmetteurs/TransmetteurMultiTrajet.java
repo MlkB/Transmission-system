@@ -95,11 +95,13 @@ public class TransmetteurMultiTrajet<E> extends Transmetteur {
      */
     private void calculerPuissanceSignal() {
         float somme = 0;
-        for (int i = 0; i < informationRecue.nbElements(); i++) {
-            float echantillon = (Float) informationRecue.iemeElement(i);
+        int count = 0;
+        for (Object obj : informationRecue) {
+            float echantillon = (Float) obj;
             somme += echantillon * echantillon;
+            count++;
         }
-        this.puissanceSignal = somme / informationRecue.nbElements();
+        this.puissanceSignal = somme / count;
     }
 
     /**
@@ -124,6 +126,7 @@ public class TransmetteurMultiTrajet<E> extends Transmetteur {
     private void genererSignalMultiTrajet() {
         this.informationEmise = new Information<Float>();
         calculerVariance();
+        double sqrtVariance = Math.sqrt(variance);
 
         int N = informationRecue.nbElements(); //nb ech analogiques
 
@@ -146,7 +149,7 @@ public class TransmetteurMultiTrajet<E> extends Transmetteur {
             }
 
             // 3. Ajout du bruit blanc gaussien centré : b(t)
-            double bruitEchantillon = rand.nextGaussian() * Math.sqrt(variance); // Modifier pour utiliser notre propre signal gaussien
+            double bruitEchantillon = rand.nextGaussian() * sqrtVariance;
             signalTotal += (float) bruitEchantillon;
 
             // Ajout du signal total à l'information émise

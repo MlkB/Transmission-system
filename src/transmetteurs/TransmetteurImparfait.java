@@ -97,12 +97,14 @@ public class TransmetteurImparfait<E> extends Transmetteur {
      */
     public void calculPuissanceSignal() {
         float somme = 0;
+        int count = 0;
 
-        for (int i = 0; i < informationRecue.nbElements(); i++) {
-            float echantillon = (Float) informationRecue.iemeElement(i); // cast en Float
+        for (Object obj : informationRecue) {
+            float echantillon = (Float) obj;
             somme += echantillon * echantillon;
+            count++;
         }
-        this.puissanceSignal = somme/informationRecue.nbElements();
+        this.puissanceSignal = somme / count;
 
     }
 
@@ -133,11 +135,13 @@ public class TransmetteurImparfait<E> extends Transmetteur {
     public void genererBBAG() {
         this.informationEmise = new Information<Float>();
         calculerVariance();
-        for (int i = 0; i < informationRecue.nbElements(); i++) {
-            float echantillon = (Float) informationRecue.iemeElement(i); // cast en Float
-            double bruitEchantillon = rand.nextGaussian() * Math.sqrt(variance);
-            this.bruit.add((float) (bruitEchantillon));
-            this.informationEmise.add(echantillon + (float) (bruitEchantillon));
+        double sqrtVariance = Math.sqrt(variance);
+
+        for (Object obj : informationRecue) {
+            float echantillon = (Float) obj;
+            double bruitEchantillon = rand.nextGaussian() * sqrtVariance;
+            this.bruit.add((float) bruitEchantillon);
+            this.informationEmise.add(echantillon + (float) bruitEchantillon);
         }
 
     }
