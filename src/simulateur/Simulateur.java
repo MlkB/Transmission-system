@@ -434,7 +434,7 @@ public class Simulateur {
     			// Utiliser SNR = 10dB par défaut si pas de bruit dans la simulation
     			float snr = (simulateur.SNRpB != null) ? simulateur.SNRpB : 10.0f;
     			AnalyseTEB.genererGraphiques(simulateur.nbBitsMess, simulateur.nEch,
-    			                             snr, simulateur.form, simulateur.seed, simulateur.trajetsMultiples);
+    			                             snr, simulateur.form, simulateur.seed, simulateur.trajetsMultiples, simulateur.codeur);
     		}
     	}
     	catch (Exception e) {

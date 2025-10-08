@@ -190,8 +190,8 @@ public class AnalyseTEB {
         int nbPoints = 10;  // SNR de 0 à 9 dB
         float[] valeursTEB = new float[nbPoints];
 
-        // Utiliser au moins 5000 bits pour une mesure fiable du TEB
-        int nbBitsAnalyse = Math.max(5000, nbBitsMessage);
+        // Utiliser le nombre de bits du message
+        int nbBitsAnalyse = nbBitsMessage;
 
         // Faire varier le SNR de 0 à 9 dB
         for (int i = 0; i < nbPoints; i++) {
@@ -229,9 +229,6 @@ public class AnalyseTEB {
         int nbPoints = 10;  // nbEch de 10 à 100
         float[] valeursTEB = new float[nbPoints];
 
-        // Cible: environ 100000 échantillons totaux pour garder le temps de calcul constant
-        int cibleEchantillons = 100000;
-
         // Référence pour garder la variance de bruit constante
         int nbEchReference = 30;  // valeur de référence
 
@@ -239,9 +236,8 @@ public class AnalyseTEB {
         for (int i = 0; i < nbPoints; i++) {
             int nbEchCourant = 10 + i * 10;
 
-            // Ajuster le nombre de bits pour garder le nombre d'échantillons constant
-            // Minimum 1000 bits pour avoir des statistiques fiables
-            int nbBitsAnalyse = Math.max(1000, cibleEchantillons / nbEchCourant);
+            // Utiliser le nombre de bits du message
+            int nbBitsAnalyse = nbBitsMessage;
 
             // Ajuster le SNR pour garder la variance de bruit constante
             // variance = (puissanceSignal × nEch) / SNR_b
@@ -262,7 +258,7 @@ public class AnalyseTEB {
             float teb = sim.calculTauxErreurBinaire();
 
             valeursTEB[i] = teb;
-            System.out.println(String.format("nbEch=%d (%d bits) => TEB=%.6f", nbEchCourant, nbBitsAnalyse, teb));
+            System.out.println(String.format("nbEch=%d => TEB=%.6f", nbEchCourant, teb));
         }
 
         VueCourbe courbe5 = new VueCourbe(valeursTEB, "TEB = f(nbEch)");
@@ -278,16 +274,16 @@ public class AnalyseTEB {
     public static void analyserCodeur() throws Exception {
         System.out.println("=== Analyse TEB avec/sans Codeur = f(SNR) ===");
 
-        int nbPoints = 5;  // SNR de 0 à 8 dB par pas de 2
+        int nbPoints = 10;  // SNR de 0 à 9 dB
         float[] valeursTEB_SansCodeur = new float[nbPoints];
         float[] valeursTEB_AvecCodeur = new float[nbPoints];
 
         // Utiliser le nombre de bits du message comme les autres analyses
         int nbBitsAnalyse = nbBitsMessage;
 
-        // Faire varier le SNR de 0 à 8 dB par pas de 2
+        // Faire varier le SNR de 0 à 9 dB
         for (int i = 0; i < nbPoints; i++) {
-            float snrCourant = (float) (i * 2);
+            float snrCourant = (float) i;
 
             // Test SANS codeur
             StringBuilder argsSans = new StringBuilder();
@@ -340,8 +336,9 @@ public class AnalyseTEB {
      * @param forme forme du signal (RZ, NRZ, NRZT)
      * @param seedValue seed pour reproductibilité (peut être null)
      * @param trajets liste des trajets définis par l'utilisateur (peut être null)
+     * @param avecCodeur true si le codeur est utilisé
      */
-    public static void genererGraphiques(int nbBits, int nbEchantillons, float snr, String forme, Integer seedValue, List<Trajet> trajets) {
+    public static void genererGraphiques(int nbBits, int nbEchantillons, float snr, String forme, Integer seedValue, List<Trajet> trajets, boolean avecCodeur) {
         try {
             // Configurer les paramètres
             nbBitsMessage = nbBits;
@@ -370,8 +367,11 @@ public class AnalyseTEB {
                 analyserSNR();
                 Thread.sleep(500);
                 analyserNbEch();
-                Thread.sleep(500);
-                analyserCodeur();
+                // Analyser le codeur seulement si utilisé
+                if (avecCodeur) {
+                    Thread.sleep(500);
+                    analyserCodeur();
+                }
             }
 
             System.out.println("=== Graphiques TEB générés ===\n");
@@ -399,6 +399,6 @@ public class AnalyseTEB {
         trajetsTest.add(new Trajet(6, 0.4f));
         trajetsTest.add(new Trajet(4, 0.1f));
         trajetsTest.add(new Trajet(3, 0.8f));
-        genererGraphiques(1000, 30, 10.0f, "RZ", 42, trajetsTest);
+        genererGraphiques(1000, 30, 10.0f, "RZ", 42, trajetsTest, false);
     }
 }
