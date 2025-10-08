@@ -1,14 +1,40 @@
 #!/bin/bash
 java -cp bin simulateur.Simulateur
-java -cp bin simulateur.Simulateur -mess 10 -s
-java -cp bin simulateur.Simulateur -seed 3 -s
-java -cp bin simulateur.Simulateur -mess 10 -seed 3 -s
-java -cp bin simulateur.Simulateur -mess 100 -seed 3 -s -form RZ
-java -cp bin simulateur.Simulateur -mess 100 -seed 3 -s -form NRZ
-java -cp bin simulateur.Simulateur -mess 100 -seed 3 -s -form NRZT
-java -cp bin simulateur.Simulateur -mess 100 -seed 3 -s -form RZ -snrpb 10
-java -cp bin simulateur.Simulateur -mess 100 -seed 3 -s -form NRZ -snrpb 10
-java -cp bin simulateur.Simulateur -mess 100 -seed 3 -s -form NRZT -snrpb 10
-java -cp bin simulateur.Simulateur -mess 100 -seed 3 -s -form NRZT -snrpb 10 -ti 10 0.1
-java -cp bin simulateur.Simulateur -mess 100 -seed 3 -s -form NRZT -snrpb 10 -ti 10 0.1
-java -cp bin simulateur.Simulateur -mess 100 -seed 3 -s -form NRZT -snrpb 10 -ti 10 0.1
+java -cp bin simulateur.Simulateur -mess 10
+java -cp bin simulateur.Simulateur -mess 1011101000
+java -cp bin simulateur.Simulateur -mess 100 -seed 42
+java -cp bin simulateur.Simulateur -mess 1010101
+java -cp bin simulateur.Simulateur -mess 1000 -seed 42
+java -cp bin simulateur.Simulateur -mess 100 -seed 3 -form NRZ
+java -cp bin simulateur.Simulateur -mess 100 -seed 3 -form RZ
+java -cp bin simulateur.Simulateur -mess 100 -seed 3 -form NRZT
+java -cp bin simulateur.Simulateur -mess 1011101000 -form NRZ
+java -cp bin simulateur.Simulateur -mess 1011101000 -form RZ
+java -cp bin simulateur.Simulateur -mess 1011101000 -form NRZT
+java -cp bin simulateur.Simulateur -mess 10101010 -form NRZT
+java -cp bin simulateur.Simulateur -mess 0000000 -form NRZT
+java -cp bin simulateur.Simulateur -mess 1111111 -form NRZT
+java -cp bin simulateur.Simulateur -mess 100 -seed 3 -form RZ -snrpb 0
+java -cp bin simulateur.Simulateur -mess 100 -seed 3 -form RZ -snrpb 5
+java -cp bin simulateur.Simulateur -mess 100 -seed 3 -form RZ -snrpb 10
+java -cp bin simulateur.Simulateur -mess 100 -seed 3 -form RZ -snrpb 20
+java -cp bin simulateur.Simulateur -mess 100 -seed 3 -form NRZ -snrpb 10
+java -cp bin simulateur.Simulateur -mess 100 -seed 3 -form NRZT -snrpb 10
+java -cp bin simulateur.Simulateur -mess 100 -seed 3 -form RZ -nbEch 10
+java -cp bin simulateur.Simulateur -mess 100 -seed 3 -form RZ -nbEch 30
+java -cp bin simulateur.Simulateur -mess 100 -seed 3 -form RZ -nbEch 50
+java -cp bin simulateur.Simulateur -mess 100 -seed 3 -form RZ -nbEch 100
+java -cp bin simulateur.Simulateur -mess 100 -seed 3 -form RZ -nbEch 3
+java -cp bin simulateur.Simulateur -mess 100 -seed 3 -form RZ -snrpb 10 -ti 5 0.3
+java -cp bin simulateur.Simulateur -mess 100 -seed 3 -form RZ -snrpb 10 -ti 5 0.3 10 0.2
+java -cp bin simulateur.Simulateur -mess 100 -seed 3 -form RZ -snrpb 10 -ti 5 0.3 10 0.2 15 0.1
+java -cp bin simulateur.Simulateur -mess 100 -seed 3 -form RZ -ti 5 0.3 10 0.2
+java -cp bin simulateur.Simulateur -mess 100 -seed 3 -form NRZT -snrpb 10 -ti 5 0.3
+java -cp bin simulateur.Simulateur -mess 100 -seed 3 -form RZ -codeur
+java -cp bin simulateur.Simulateur -mess 100 -seed 3 -form RZ -snrpb 10 -codeur
+java -cp bin simulateur.Simulateur -mess 100 -seed 3 -form RZ -snrpb 5 -codeur
+java -cp bin simulateur.Simulateur -mess 100 -seed 3 -form NRZ -snrpb 10 -codeur
+java -cp bin simulateur.Simulateur -mess 100 -seed 3 -form NRZT -snrpb 10 -codeur
+java -cp bin simulateur.Simulateur -mess 100 -seed 3 -form RZ -nbEch 50 -snrpb 8 -ti 5 0.3 10 0.2
+java -cp bin simulateur.Simulateur -mess 100 -seed 3 -form NRZT -nbEch 30 -snrpb 10 -ti 5 0.3 -codeur
+java -cp bin simulateur.Simulateur -mess 1011101000 -form NRZT -s
