@@ -128,6 +128,23 @@ public class TransmetteurImparfait<E> extends Transmetteur {
     }
 
     /**
+     * Génère un échantillon de bruit gaussien centré réduit selon la formule de Box-Muller.
+     * @return un échantillon suivant une loi normale N(0,1)
+     */
+    public double genererBruitGaussienFormule() {
+        double u1 = Math.random(); // tirage uniforme [0,1]
+        double u2 = Math.random();
+
+        // Box-Muller : transforme les uniformes en loi gaussienne centrée réduite
+        double x = Math.sqrt(-2.0 * Math.log(u1)) * Math.cos(2.0 * Math.PI * u2);
+
+        // Ici, x suit une loi normale centrée réduite : moyenne μ = 0, variance σ² = 1
+        // Sa densité suit bien : f(x) = (1/sqrt(2π)) * exp(-x²/2)
+
+        return x;
+    }
+
+    /**
      * génère le bruit blanc additif gaussien et
      * l'ajoute au signal reçu pour créer le signal émis
      */
@@ -139,7 +156,7 @@ public class TransmetteurImparfait<E> extends Transmetteur {
 
         for (Object obj : informationRecue) {
             float echantillon = (Float) obj;
-            double bruitEchantillon = rand.nextGaussian() * sqrtVariance;
+            double bruitEchantillon = genererBruitGaussienFormule() * sqrtVariance;
             this.bruit.add((float) bruitEchantillon);
             this.informationEmise.add(echantillon + (float) bruitEchantillon);
         }
