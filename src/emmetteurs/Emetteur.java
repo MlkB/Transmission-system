@@ -83,38 +83,38 @@ public class Emetteur<T> extends Source<Float> implements DestinationInterface <
                     }
                 }
             } else if ("NRZT".equalsIgnoreCase(typeCodage)) {
+                float prevLevel = 0.0f; // Niveau précédent (commence à 0)
+
                 for (int b = 0; b < informationRecue.nbElements(); b++) {
                     float level = informationRecue.iemeElement(b) ? 1.0f : -1.0f;
-                    float nextLevel = (b < informationRecue.nbElements() - 1)
-                            ? (informationRecue.iemeElement(b + 1) ? 1.0f : -1.0f)
-                            : 0.0f; // retour à 0 après le dernier bit
-
                     int third = nbEch / 3;
 
                     for (int i = 0; i < nbEch; i++) {
                         float value;
 
-                        if (nextLevel == level) {
-                            // Pas de transition si le bit suivant est identique
+                        if (prevLevel == level) {
+                            // Pas de transition : niveau constant
                             value = level;
                         } else {
-                            // Transition progressive
+                            // Transition progressive du niveau précédent vers le niveau actuel
                             if (i < third) {
-                                // Montée de 0 -> niveau au début du bit
+                                // Transition progressive de prevLevel vers level
                                 float alpha = (float) i / third;
-                                value = alpha * level;
+                                value = prevLevel + alpha * (level - prevLevel);
                             } else if (i < 2 * third) {
                                 // Niveau stable
                                 value = level;
                             } else {
-                                // Descente niveau -> 0 si bit différent
-                                float alpha = (float) (i - 2 * third) / third;
-                                value = level * (1 - alpha);
+                                // Niveau stable (on ne redescend pas)
+                                value = level;
                             }
                         }
 
                         informationGeneree.add(value);
                     }
+
+                    // Mettre à jour le niveau précédent pour le prochain bit
+                    prevLevel = level;
                 }
         } else {
                 throw new InformationNonConformeException("Type de codage inconnu");
