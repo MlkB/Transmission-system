@@ -1,7 +1,10 @@
 package visualisations;
-	
+
 import destinations.DestinationInterface;
 import information.Information;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 
 /**
  * Classe réalisant l'affichage d'information composée d'éléments
@@ -42,5 +45,24 @@ public class SondeLogique extends Sonde <Boolean> {
 	if (vueCourbe == null) {
       	    vueCourbe = new VueCourbe (table,  nbPixels, nom);
 	}
+
+	// Exporter les données vers CSV
+	exportToCSV(table);
+    }
+
+    /**
+     * Exporte les données vers un fichier CSV
+     * @param table tableau de valeurs booléennes à exporter
+     */
+    private void exportToCSV(boolean[] table) {
+        String fileName = "sonde_" + nom.replaceAll("[^a-zA-Z0-9]", "_") + ".csv";
+        try (PrintWriter writer = new PrintWriter(new FileWriter(fileName))) {
+            writer.println("index,valeur");
+            for (int i = 0; i < table.length; i++) {
+                writer.println(i + "," + (table[i] ? 1 : 0));
+            }
+        } catch (IOException e) {
+            System.err.println("Erreur lors de l'export CSV de " + nom + ": " + e.getMessage());
+        }
     }
 }

@@ -51,6 +51,9 @@ public class Simulateur {
     /** indique si le Simulateur doit générer les graphiques d'analyse TEB */
     private boolean modeAnalyse = false;
 
+    /** indique si le Simulateur doit comparer RZ/NRZ/NRZT dans les analyses TEB */
+    private boolean modeComparaison = false;
+
     /** indique si le Simulateur utilise un message généré de manière aléatoire (message imposé sinon) */
     private boolean messageAleatoire = true;
 
@@ -90,8 +93,7 @@ public class Simulateur {
 	/** booléen disant si on utilise un codeur ou non */
 	private Boolean codeur = false;
 
-	/** booléen disant si on veut analyser l'efficacité du codeur */
-	private Boolean analyseCodeur = false;
+
 
     private Emetteur emetteur = null;
     private Recepteur recepteur = null;
@@ -400,10 +402,68 @@ public class Simulateur {
 	}
 
 
-   
-   
-   
-   
+	/**
+	 * Supprime les anciens fichiers CSV pour éviter d'afficher des données obsolètes
+	 */
+	private static void nettoyerAnciensCSV() {
+		try {
+			java.io.File currentDir = new java.io.File(".");
+			java.io.File[] csvFiles = currentDir.listFiles((dir, name) ->
+				name.startsWith("sonde_") && name.endsWith(".csv") ||
+				name.startsWith("TEB_") && name.endsWith(".csv")
+			);
+
+			if (csvFiles != null) {
+				for (java.io.File file : csvFiles) {
+					file.delete();
+				}
+			}
+		} catch (Exception e) {
+			System.err.println("Erreur lors du nettoyage des CSV: " + e.getMessage());
+		}
+	}
+
+	/**
+	 * Appelle le script Python pour générer les graphiques avec graduations et légendes
+	 * Cette méthode exécute plot_curves.py pour afficher les courbes à partir des CSV
+	 */
+	private static void appelScriptPython() {
+		try {
+			System.out.println("\n=== Génération des graphiques Python ===");
+
+			// Déterminer la commande Python (python3 ou python)
+			String pythonCmd = "python3";
+			try {
+				Process testPython = Runtime.getRuntime().exec("python3 --version");
+				testPython.waitFor();
+				if (testPython.exitValue() != 0) {
+					pythonCmd = "python";
+				}
+			} catch (Exception e) {
+				pythonCmd = "python";
+			}
+
+			// Exécuter le script Python
+			ProcessBuilder pb = new ProcessBuilder(pythonCmd, "plot_curves.py");
+			pb.inheritIO(); // Pour afficher la sortie du script Python
+			Process process = pb.start();
+
+			// Attendre que le script se termine
+			int exitCode = process.waitFor();
+
+			if (exitCode == 0) {
+				System.out.println("Graphiques Python générés avec succès !");
+			} else {
+				System.err.println("Erreur lors de l'exécution du script Python (code: " + exitCode + ")");
+			}
+
+		} catch (Exception e) {
+			System.err.println("Impossible d'exécuter le script Python: " + e.getMessage());
+			System.err.println("Vous pouvez exécuter manuellement: python3 plot_curves.py");
+		}
+	}
+
+
     /** La fonction main instancie un Simulateur à l'aide des
      *  arguments paramètres et affiche le résultat de l'exécution
      *  d'une transmission.
@@ -431,10 +491,16 @@ public class Simulateur {
 
     		// Générer les graphiques d'analyse TEB si affichage activé
     		if (simulateur.isAffichageActive()) {
+    			// Nettoyer les anciens fichiers CSV avant de générer les nouveaux
+    			nettoyerAnciensCSV();
+
     			// Utiliser SNR = 10dB par défaut si pas de bruit dans la simulation
     			float snr = (simulateur.SNRpB != null) ? simulateur.SNRpB : 10.0f;
     			AnalyseTEB.genererGraphiques(simulateur.nbBitsMess, simulateur.nEch,
     			                             snr, simulateur.form, simulateur.seed, simulateur.trajetsMultiples, simulateur.codeur);
+
+    			// Appeler le script Python pour générer les graphiques améliorés
+    			appelScriptPython();
     		}
     	}
     	catch (Exception e) {

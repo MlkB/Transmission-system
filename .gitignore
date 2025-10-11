@@ -1,1 +1,38 @@
-.idea
+cat << 'EOF' > .gitignore
+# === FICHIERS DE DOCUMENTATION ===
+*.pdf
+*.doc
+*.docx
+*.odt
+*.rtf
+*.txt
+*.md
+*.tex
+/docs
+
+# === FICHIERS DE COMPILATION / BUILD ===
+*.o
+*.obj
+*.exe
+*.out
+*.dll
+*.so
+*.a
+*.lib
+/build/
+/dist/
+/bin/
+/obj/
+/target/
+*.log
+*.tmp
+*.bak
+*.swp
+*.DS_Store
+Thumbs.db
+__pycache__/
+*.pyc
+
+# === FICHIERS CSV ===
+*.csv
+EOF

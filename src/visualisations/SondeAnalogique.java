@@ -1,6 +1,9 @@
 package visualisations;
-	
+
 import java.util.Iterator;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 
 import destinations.DestinationInterface;
 import information.Information;
@@ -39,9 +42,24 @@ public class SondeAnalogique extends Sonde <Float> {
         if (vueCourbe == null) {
             vueCourbe = new VueCourbe (table, nom);
         }
+
+        // Exporter les données vers CSV
+        exportToCSV(table);
     }
 
-
-   
-    
+    /**
+     * Exporte les données vers un fichier CSV
+     * @param table tableau de valeurs à exporter
+     */
+    private void exportToCSV(float[] table) {
+        String fileName = "sonde_" + nom.replaceAll("[^a-zA-Z0-9]", "_") + ".csv";
+        try (PrintWriter writer = new PrintWriter(new FileWriter(fileName))) {
+            writer.println("index,valeur");
+            for (int i = 0; i < table.length; i++) {
+                writer.println(i + "," + table[i]);
+            }
+        } catch (IOException e) {
+            System.err.println("Erreur lors de l'export CSV de " + nom + ": " + e.getMessage());
+        }
+    }
 }

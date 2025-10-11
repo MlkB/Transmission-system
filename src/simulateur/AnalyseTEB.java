@@ -3,6 +3,9 @@ package simulateur;
 import transmetteurs.Trajet;
 import visualisations.VueCourbe;
 import java.util.List;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 
 /**
  * Classe pour analyser le Taux d'Erreur Binaire (TEB) en fonction de différents paramètres
@@ -27,6 +30,38 @@ public class AnalyseTEB {
      */
     public AnalyseTEB() {
         // rien à initialiser pour l'instant
+    }
+
+    /**
+     * Exporte les données TEB vers un fichier CSV
+     * @param fileName nom du fichier (sans extension)
+     * @param xLabel label de l'axe X
+     * @param xValues valeurs de l'axe X
+     * @param yValues valeurs de l'axe Y (TEB)
+     */
+    private static void exportToCSV(String fileName, String xLabel, float[] xValues, float[] yValues) {
+        try (PrintWriter writer = new PrintWriter(new FileWriter("TEB_" + fileName + ".csv"))) {
+            writer.println(xLabel + ",TEB");
+            for (int i = 0; i < xValues.length && i < yValues.length; i++) {
+                writer.println(xValues[i] + "," + yValues[i]);
+            }
+        } catch (IOException e) {
+            System.err.println("Erreur lors de l'export CSV de " + fileName + ": " + e.getMessage());
+        }
+    }
+
+    /**
+     * Exporte les données TEB vers un fichier CSV (version simplifiée pour index)
+     * @param fileName nom du fichier (sans extension)
+     * @param xLabel label de l'axe X
+     * @param yValues valeurs de l'axe Y (TEB), l'index sert de valeur X
+     */
+    private static void exportToCSV(String fileName, String xLabel, float[] yValues) {
+        float[] xValues = new float[yValues.length];
+        for (int i = 0; i < yValues.length; i++) {
+            xValues[i] = i;
+        }
+        exportToCSV(fileName, xLabel, xValues, yValues);
     }
 
     public static void analyserNbTrajets() throws Exception {
@@ -71,6 +106,7 @@ public class AnalyseTEB {
 
         VueCourbe courbe1 = new VueCourbe(valeursTEB, "TEB = f(Nombre de trajets)");
         try { Thread.sleep(200); } catch (Exception e) {}  // Laisser le temps à la fenêtre de se créer
+        exportToCSV("NbTrajets", "NbTrajets", valeursTEB);
         System.out.println("Graphique TEB vs NbTrajets généré\n");
     }
 
@@ -91,6 +127,7 @@ public class AnalyseTEB {
 
         int nbPoints = 9;  // alpha de 0.1 à 0.9
         float[] valeursTEB = new float[nbPoints];
+        float[] valeursAlpha = new float[nbPoints];
 
         // Récupérer le tau du premier trajet
         int tauPremier = trajetsUtilisateur.get(0).getTau();
@@ -98,6 +135,7 @@ public class AnalyseTEB {
         // Faire varier alpha de 0.1 à 0.9
         for (int i = 0; i < nbPoints; i++) {
             float alpha = 0.1f + i * 0.1f;
+            valeursAlpha[i] = alpha;
 
             StringBuilder args = new StringBuilder();
             args.append("-mess ").append(nbBitsMessage);
@@ -125,6 +163,7 @@ public class AnalyseTEB {
 
         VueCourbe courbe2 = new VueCourbe(valeursTEB, "TEB = f(alpha_i)");
         try { Thread.sleep(200); } catch (Exception e) {}  // Laisser le temps à la fenêtre de se créer
+        exportToCSV("Alpha", "Alpha", valeursAlpha, valeursTEB);
         System.out.println("Graphique TEB vs Alpha généré\n");
     }
 
@@ -145,12 +184,15 @@ public class AnalyseTEB {
 
         int nbPoints = 20;  // tau de 1 à 20
         float[] valeursTEB = new float[nbPoints];
+        float[] valeursTau = new float[nbPoints];
 
         // Récupérer l'alpha du premier trajet
         float alphaPremier = trajetsUtilisateur.get(0).getAlpha();
 
         // Faire varier tau de 1 à 20 échantillons
         for (int tau = 1; tau <= nbPoints; tau++) {
+            valeursTau[tau - 1] = tau;
+
             StringBuilder args = new StringBuilder();
             args.append("-mess ").append(nbBitsMessage);
             args.append(" -form ").append(forme);
@@ -177,6 +219,7 @@ public class AnalyseTEB {
 
         VueCourbe courbe3 = new VueCourbe(valeursTEB, "TEB = f(tau_i)");
         try { Thread.sleep(200); } catch (Exception e) {}  // Laisser le temps à la fenêtre de se créer
+        exportToCSV("Tau", "Tau", valeursTau, valeursTEB);
         System.out.println("Graphique TEB vs Tau généré\n");
     }
 
@@ -189,6 +232,7 @@ public class AnalyseTEB {
 
         int nbPoints = 10;  // SNR de 0 à 9 dB
         float[] valeursTEB = new float[nbPoints];
+        float[] valeursSNR = new float[nbPoints];
 
         // Utiliser le nombre de bits du message
         int nbBitsAnalyse = nbBitsMessage;
@@ -196,6 +240,7 @@ public class AnalyseTEB {
         // Faire varier le SNR de 0 à 9 dB
         for (int i = 0; i < nbPoints; i++) {
             float snrCourant = (float) i;
+            valeursSNR[i] = snrCourant;
 
             StringBuilder args = new StringBuilder();
             args.append("-mess ").append(nbBitsAnalyse);
@@ -216,6 +261,7 @@ public class AnalyseTEB {
 
         VueCourbe courbe4 = new VueCourbe(valeursTEB, "TEB = f(SNR en dB)");
         try { Thread.sleep(200); } catch (Exception e) {}
+        exportToCSV("SNR", "SNR_dB", valeursSNR, valeursTEB);
         System.out.println("Graphique TEB vs SNR généré\n");
     }
 
@@ -228,6 +274,7 @@ public class AnalyseTEB {
 
         int nbPoints = 10;  // nbEch de 10 à 100
         float[] valeursTEB = new float[nbPoints];
+        float[] valeursNbEch = new float[nbPoints];
 
         // Référence pour garder la variance de bruit constante
         int nbEchReference = 30;  // valeur de référence
@@ -235,6 +282,7 @@ public class AnalyseTEB {
         // Faire varier nbEch de 10 à 100 par pas de 10
         for (int i = 0; i < nbPoints; i++) {
             int nbEchCourant = 10 + i * 10;
+            valeursNbEch[i] = nbEchCourant;
 
             // Utiliser le nombre de bits du message
             int nbBitsAnalyse = nbBitsMessage;
@@ -263,6 +311,7 @@ public class AnalyseTEB {
 
         VueCourbe courbe5 = new VueCourbe(valeursTEB, "TEB = f(nbEch)");
         try { Thread.sleep(200); } catch (Exception e) {}
+        exportToCSV("NbEch", "NbEch", valeursNbEch, valeursTEB);
         System.out.println("Graphique TEB vs nbEch généré\n");
     }
 
@@ -277,6 +326,7 @@ public class AnalyseTEB {
         int nbPoints = 10;  // SNR de 0 à 9 dB
         float[] valeursTEB_SansCodeur = new float[nbPoints];
         float[] valeursTEB_AvecCodeur = new float[nbPoints];
+        float[] valeursSNR = new float[nbPoints];
 
         // Utiliser le nombre de bits du message comme les autres analyses
         int nbBitsAnalyse = nbBitsMessage;
@@ -284,6 +334,7 @@ public class AnalyseTEB {
         // Faire varier le SNR de 0 à 9 dB
         for (int i = 0; i < nbPoints; i++) {
             float snrCourant = (float) i;
+            valeursSNR[i] = snrCourant;
 
             // Test SANS codeur
             StringBuilder argsSans = new StringBuilder();
@@ -325,6 +376,8 @@ public class AnalyseTEB {
         try { Thread.sleep(200); } catch (Exception e) {}
         VueCourbe courbeAvec = new VueCourbe(valeursTEB_AvecCodeur, "TEB avec codeur = f(SNR en dB)");
         try { Thread.sleep(200); } catch (Exception e) {}
+        exportToCSV("Codeur_Sans", "SNR_dB", valeursSNR, valeursTEB_SansCodeur);
+        exportToCSV("Codeur_Avec", "SNR_dB", valeursSNR, valeursTEB_AvecCodeur);
         System.out.println("Graphiques TEB avec/sans codeur générés\n");
     }
 
