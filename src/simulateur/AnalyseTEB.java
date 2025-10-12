@@ -382,6 +382,261 @@ public class AnalyseTEB {
     }
 
     /**
+     * Analyse de comparaison : TEB en fonction du SNR pour NRZ, NRZT et RZ
+     * Génère un fichier CSV pour chaque type de codage
+     * @param nbBits nombre de bits du message
+     * @param nbEchantillons nombre d'échantillons par bit
+     * @param snr rapport signal/bruit en dB de référence
+     * @param seedValue seed pour reproductibilité (peut être null)
+     * @throws Exception si une erreur survient lors de l'exécution du simulateur
+     */
+    public static void analyserComparaison(int nbBits, int nbEchantillons, float snr, Integer seedValue) throws Exception {
+        // Configurer les paramètres
+        nbBitsMessage = nbBits;
+        nbEch = nbEchantillons;
+        snrDb = snr;
+        seed = seedValue;
+
+        System.out.println("=== Analyse Comparaison TEB : NRZ vs NRZT vs RZ ===");
+
+        String[] formes = {"NRZ", "NRZT", "RZ"};
+        int nbPoints = 10;  // SNR de 0 à 9 dB
+
+        for (String formeCourante : formes) {
+            float[] valeursTEB = new float[nbPoints];
+            float[] valeursSNR = new float[nbPoints];
+
+            System.out.println("Analyse pour " + formeCourante + "...");
+
+            // Faire varier le SNR de 0 à 9 dB
+            for (int i = 0; i < nbPoints; i++) {
+                float snrCourant = (float) i;
+                valeursSNR[i] = snrCourant;
+
+                StringBuilder args = new StringBuilder();
+                args.append("-mess ").append(nbBitsMessage);
+                args.append(" -form ").append(formeCourante);
+                args.append(" -nbEch ").append(nbEch);
+                if (seed != null) {
+                    args.append(" -seed ").append(seed);
+                }
+                args.append(" -snrpb ").append(snrCourant);
+
+                Simulateur sim = new Simulateur(args.toString().split("\\s+"));
+                sim.execute();
+                float teb = sim.calculTauxErreurBinaire();
+
+                valeursTEB[i] = teb;
+                System.out.println(String.format("  %s - SNR=%.1f dB => TEB=%.6f", formeCourante, snrCourant, teb));
+            }
+
+            // Exporter vers CSV avec le nom du type de codage
+            exportToCSV(formeCourante, "SNR_dB", valeursSNR, valeursTEB);
+        }
+
+        System.out.println("Fichiers de comparaison SNR générés\n");
+
+        // Générer aussi l'analyse nbEch
+        System.out.println("=== Analyse Comparaison TEB : NRZ vs NRZT vs RZ (nbEch) ===");
+
+        for (String formeCourante : formes) {
+            float[] valeursTEB = new float[nbPoints];
+            float[] valeursNbEch = new float[nbPoints];
+
+            System.out.println("Analyse nbEch pour " + formeCourante + "...");
+
+            // Référence pour garder la variance de bruit constante
+            int nbEchReference = 30;
+
+            // Faire varier nbEch de 10 à 100 par pas de 10
+            for (int i = 0; i < nbPoints; i++) {
+                int nbEchCourant = 10 + i * 10;
+                valeursNbEch[i] = nbEchCourant;
+
+                // Ajuster le SNR pour garder la variance de bruit constante
+                float snrAjuste = snrDb + 10.0f * (float)Math.log10((double)nbEchCourant / nbEchReference);
+
+                StringBuilder args = new StringBuilder();
+                args.append("-mess ").append(nbBitsMessage);
+                args.append(" -form ").append(formeCourante);
+                args.append(" -nbEch ").append(nbEchCourant);
+                if (seed != null) {
+                    args.append(" -seed ").append(seed);
+                }
+                args.append(" -snrpb ").append(snrAjuste);
+
+                Simulateur sim = new Simulateur(args.toString().split("\\s+"));
+                sim.execute();
+                float teb = sim.calculTauxErreurBinaire();
+
+                valeursTEB[i] = teb;
+                System.out.println(String.format("  %s - nbEch=%d => TEB=%.6f", formeCourante, nbEchCourant, teb));
+            }
+
+            // Exporter vers CSV avec "_NbEch" pour différencier
+            exportToCSV(formeCourante + "_NbEch", "NbEch", valeursNbEch, valeursTEB);
+        }
+
+        System.out.println("Fichiers de comparaison nbEch générés\n");
+    }
+
+    /**
+     * Analyse de comparaison pour multi-trajets : TEB pour NRZ, NRZT et RZ
+     * Génère les analyses NbTrajets, Alpha et Tau pour chaque type de codage
+     * @param nbBits nombre de bits du message
+     * @param nbEchantillons nombre d'échantillons par bit
+     * @param snr rapport signal/bruit en dB
+     * @param seedValue seed pour reproductibilité (peut être null)
+     * @param trajets liste des trajets définis par l'utilisateur
+     * @throws Exception si une erreur survient lors de l'exécution du simulateur
+     */
+    public static void analyserComparaisonMultiTrajets(int nbBits, int nbEchantillons, float snr, Integer seedValue, List<Trajet> trajets) throws Exception {
+        // Configurer les paramètres
+        nbBitsMessage = nbBits;
+        nbEch = nbEchantillons;
+        snrDb = snr;
+        seed = seedValue;
+        trajetsUtilisateur = trajets;
+
+        if (trajets == null || trajets.isEmpty()) {
+            System.out.println("Pas de trajets définis pour la comparaison multi-trajets\n");
+            return;
+        }
+
+        String[] formes = {"NRZ", "NRZT", "RZ"};
+
+        // ===== Analyse 1 : TEB = f(NbTrajets) =====
+        System.out.println("=== Analyse Comparaison TEB : NRZ vs NRZT vs RZ (NbTrajets) ===");
+
+        int nbTrajetsMax = trajets.size();
+        int nbPoints = nbTrajetsMax + 1;
+
+        for (String formeCourante : formes) {
+            float[] valeursTEB = new float[nbPoints];
+            float[] valeursNbTrajets = new float[nbPoints];
+
+            System.out.println("Analyse NbTrajets pour " + formeCourante + "...");
+
+            for (int nbTrajets = 0; nbTrajets < nbPoints; nbTrajets++) {
+                valeursNbTrajets[nbTrajets] = nbTrajets;
+
+                StringBuilder args = new StringBuilder();
+                args.append("-mess ").append(nbBitsMessage);
+                args.append(" -form ").append(formeCourante);
+                args.append(" -nbEch ").append(nbEch);
+                if (seed != null) {
+                    args.append(" -seed ").append(seed);
+                }
+                args.append(" -snrpb ").append(snrDb);
+
+                if (nbTrajets > 0) {
+                    args.append(" -ti");
+                    for (int i = 0; i < nbTrajets; i++) {
+                        Trajet t = trajets.get(i);
+                        args.append(" ").append(t.getTau()).append(" ").append(t.getAlpha());
+                    }
+                }
+
+                Simulateur sim = new Simulateur(args.toString().split("\\s+"));
+                sim.execute();
+                float teb = sim.calculTauxErreurBinaire();
+
+                valeursTEB[nbTrajets] = teb;
+                System.out.println(String.format("  %s - NbTrajets=%d => TEB=%.6f", formeCourante, nbTrajets, teb));
+            }
+
+            exportToCSV(formeCourante + "_NbTrajets", "NbTrajets", valeursNbTrajets, valeursTEB);
+        }
+
+        // ===== Analyse 2 : TEB = f(Alpha) =====
+        System.out.println("\n=== Analyse Comparaison TEB : NRZ vs NRZT vs RZ (Alpha) ===");
+
+        nbPoints = 9;
+        int tauPremier = trajets.get(0).getTau();
+
+        for (String formeCourante : formes) {
+            float[] valeursTEB = new float[nbPoints];
+            float[] valeursAlpha = new float[nbPoints];
+
+            System.out.println("Analyse Alpha pour " + formeCourante + "...");
+
+            for (int i = 0; i < nbPoints; i++) {
+                float alpha = 0.1f + i * 0.1f;
+                valeursAlpha[i] = alpha;
+
+                StringBuilder args = new StringBuilder();
+                args.append("-mess ").append(nbBitsMessage);
+                args.append(" -form ").append(formeCourante);
+                args.append(" -nbEch ").append(nbEch);
+                if (seed != null) {
+                    args.append(" -seed ").append(seed);
+                }
+                args.append(" -snrpb ").append(snrDb);
+                args.append(" -ti");
+                args.append(" ").append(tauPremier).append(" ").append(alpha);
+
+                for (int j = 1; j < trajets.size(); j++) {
+                    Trajet t = trajets.get(j);
+                    args.append(" ").append(t.getTau()).append(" ").append(t.getAlpha());
+                }
+
+                Simulateur sim = new Simulateur(args.toString().split("\\s+"));
+                sim.execute();
+                float teb = sim.calculTauxErreurBinaire();
+
+                valeursTEB[i] = teb;
+                System.out.println(String.format("  %s - Alpha=%.1f => TEB=%.6f", formeCourante, alpha, teb));
+            }
+
+            exportToCSV(formeCourante + "_Alpha", "Alpha", valeursAlpha, valeursTEB);
+        }
+
+        // ===== Analyse 3 : TEB = f(Tau) =====
+        System.out.println("\n=== Analyse Comparaison TEB : NRZ vs NRZT vs RZ (Tau) ===");
+
+        nbPoints = 20;
+        float alphaPremier = trajets.get(0).getAlpha();
+
+        for (String formeCourante : formes) {
+            float[] valeursTEB = new float[nbPoints];
+            float[] valeursTau = new float[nbPoints];
+
+            System.out.println("Analyse Tau pour " + formeCourante + "...");
+
+            for (int tau = 1; tau <= nbPoints; tau++) {
+                valeursTau[tau - 1] = tau;
+
+                StringBuilder args = new StringBuilder();
+                args.append("-mess ").append(nbBitsMessage);
+                args.append(" -form ").append(formeCourante);
+                args.append(" -nbEch ").append(nbEch);
+                if (seed != null) {
+                    args.append(" -seed ").append(seed);
+                }
+                args.append(" -snrpb ").append(snrDb);
+                args.append(" -ti");
+                args.append(" ").append(tau).append(" ").append(alphaPremier);
+
+                for (int j = 1; j < trajets.size(); j++) {
+                    Trajet t = trajets.get(j);
+                    args.append(" ").append(t.getTau()).append(" ").append(t.getAlpha());
+                }
+
+                Simulateur sim = new Simulateur(args.toString().split("\\s+"));
+                sim.execute();
+                float teb = sim.calculTauxErreurBinaire();
+
+                valeursTEB[tau - 1] = teb;
+                System.out.println(String.format("  %s - Tau=%d => TEB=%.6f", formeCourante, tau, teb));
+            }
+
+            exportToCSV(formeCourante + "_Tau", "Tau", valeursTau, valeursTEB);
+        }
+
+        System.out.println("Fichiers de comparaison multi-trajets générés\n");
+    }
+
+    /**
      * Méthode appelée par Simulateur pour générer les graphiques d'analyse TEB
      * @param nbBits nombre de bits du message
      * @param nbEchantillons nombre d'échantillons par bit

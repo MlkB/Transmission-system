@@ -35,6 +35,7 @@ import emmetteurs.Emetteur;
  *   <li>-ne k : nombre d'échantillons par symbole (nbEch). Défaut : 30</li>
  *   <li>-snrpb d : SNR par bit en dB ; si absent → transmetteur parfait (pas de bruit)</li>
  *   <li>-seedBruit v : graine du bruit AWGN (reproductibilité du canal)</li>
+ *   <li>-comparaison : affiche la comparaison des TEB pour NRZ, NRZT et RZ sur le même graphique</li>
  * </ul>
  * Exemples :
  * <pre>
@@ -319,6 +320,10 @@ public class Simulateur {
 				codeur = true;
 			}
 
+			else if (args[i].matches("-comparaison")) {
+				modeComparaison = true;
+			}
+
 
     		else throw new ArgumentsException("Option invalide :"+ args[i]);
     	}
@@ -426,8 +431,9 @@ public class Simulateur {
 	/**
 	 * Appelle le script Python pour générer les graphiques avec graduations et légendes
 	 * Cette méthode exécute plot_curves.py pour afficher les courbes à partir des CSV
+	 * @param comparaison si true, affiche la comparaison NRZ/NRZT/RZ
 	 */
-	private static void appelScriptPython() {
+	private static void appelScriptPython(boolean comparaison) {
 		try {
 			System.out.println("\n=== Génération des graphiques Python ===");
 
@@ -443,8 +449,13 @@ public class Simulateur {
 				pythonCmd = "python";
 			}
 
-			// Exécuter le script Python
-			ProcessBuilder pb = new ProcessBuilder(pythonCmd, "plot_curves.py");
+			// Exécuter le script Python avec ou sans -comparaison
+			ProcessBuilder pb;
+			if (comparaison) {
+				pb = new ProcessBuilder(pythonCmd, "plot_curves.py", "-comparaison");
+			} else {
+				pb = new ProcessBuilder(pythonCmd, "plot_curves.py");
+			}
 			pb.inheritIO(); // Pour afficher la sortie du script Python
 			Process process = pb.start();
 
@@ -496,11 +507,29 @@ public class Simulateur {
 
     			// Utiliser SNR = 10dB par défaut si pas de bruit dans la simulation
     			float snr = (simulateur.SNRpB != null) ? simulateur.SNRpB : 10.0f;
-    			AnalyseTEB.genererGraphiques(simulateur.nbBitsMess, simulateur.nEch,
-    			                             snr, simulateur.form, simulateur.seed, simulateur.trajetsMultiples, simulateur.codeur);
+
+    			if (simulateur.modeComparaison) {
+    				// Mode comparaison : générer les TEB pour NRZ, NRZT et RZ
+    				try {
+    					if (simulateur.trajetsMultiples != null && !simulateur.trajetsMultiples.isEmpty()) {
+    						// Mode comparaison avec multi-trajets
+    						AnalyseTEB.analyserComparaisonMultiTrajets(simulateur.nbBitsMess, simulateur.nEch, snr, simulateur.seed, simulateur.trajetsMultiples);
+    					} else {
+    						// Mode comparaison simple (SNR et nbEch)
+    						AnalyseTEB.analyserComparaison(simulateur.nbBitsMess, simulateur.nEch, snr, simulateur.seed);
+    					}
+    				} catch (Exception e) {
+    					System.err.println("Erreur lors de l'analyse de comparaison: " + e.getMessage());
+    					e.printStackTrace();
+    				}
+    			} else {
+    				// Mode normal
+    				AnalyseTEB.genererGraphiques(simulateur.nbBitsMess, simulateur.nEch,
+    				                             snr, simulateur.form, simulateur.seed, simulateur.trajetsMultiples, simulateur.codeur);
+    			}
 
     			// Appeler le script Python pour générer les graphiques améliorés
-    			appelScriptPython();
+    			appelScriptPython(simulateur.modeComparaison);
     		}
     	}
     	catch (Exception e) {
