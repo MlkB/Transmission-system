@@ -41,12 +41,12 @@ public class SondeLogique extends Sonde <Boolean> {
             table[i] = b;
             i++;
 	}
-	// Créer la fenêtre seulement la première fois
-	if (vueCourbe == null) {
-      	    vueCourbe = new VueCourbe (table,  nbPixels, nom);
-	}
+	// Ne plus créer de fenêtre Java, tout est affiché en Python maintenant
+	// if (vueCourbe == null) {
+      	//     vueCourbe = new VueCourbe (table,  nbPixels, nom);
+	// }
 
-	// Exporter les données vers CSV
+	// Exporter les données vers CSV pour affichage Python
 	exportToCSV(table);
     }
 

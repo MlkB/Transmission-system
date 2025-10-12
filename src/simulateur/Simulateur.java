@@ -500,35 +500,45 @@ public class Simulateur {
     		}
     		System.out.println(s + "  =>   TEB : " + simulateur.calculTauxErreurBinaire());
 
-    		// Générer les graphiques d'analyse TEB si affichage activé
+    		// Générer les graphiques d'analyse TEB si affichage activé ET si bruit ou multi-trajets présent
     		if (simulateur.isAffichageActive()) {
-    			// Nettoyer les anciens fichiers CSV avant de générer les nouveaux
-    			nettoyerAnciensCSV();
+    			// Vérifier si on a du bruit (-snrpb) ou des multi-trajets (-ti)
+    			boolean avecBruitOuMultiTrajets = (simulateur.SNRpB != null) ||
+    			                                   (simulateur.trajetsMultiples != null && !simulateur.trajetsMultiples.isEmpty());
 
-    			// Utiliser SNR = 10dB par défaut si pas de bruit dans la simulation
-    			float snr = (simulateur.SNRpB != null) ? simulateur.SNRpB : 10.0f;
+    			if (avecBruitOuMultiTrajets) {
+    				// Nettoyer les anciens fichiers CSV avant de générer les nouveaux
+    				nettoyerAnciensCSV();
 
-    			if (simulateur.modeComparaison) {
-    				// Mode comparaison : générer les TEB pour NRZ, NRZT et RZ
-    				try {
-    					if (simulateur.trajetsMultiples != null && !simulateur.trajetsMultiples.isEmpty()) {
-    						// Mode comparaison avec multi-trajets
-    						AnalyseTEB.analyserComparaisonMultiTrajets(simulateur.nbBitsMess, simulateur.nEch, snr, simulateur.seed, simulateur.trajetsMultiples);
-    					} else {
-    						// Mode comparaison simple (SNR et nbEch)
-    						AnalyseTEB.analyserComparaison(simulateur.nbBitsMess, simulateur.nEch, snr, simulateur.seed);
+    				// Utiliser SNR = 10dB par défaut si pas de bruit dans la simulation
+    				float snr = (simulateur.SNRpB != null) ? simulateur.SNRpB : 10.0f;
+
+    				if (simulateur.modeComparaison) {
+    					// Mode comparaison : générer les TEB pour NRZ, NRZT et RZ
+    					try {
+    						if (simulateur.trajetsMultiples != null && !simulateur.trajetsMultiples.isEmpty()) {
+    							// Mode comparaison avec multi-trajets
+    							AnalyseTEB.analyserComparaisonMultiTrajets(simulateur.nbBitsMess, simulateur.nEch, snr, simulateur.seed, simulateur.trajetsMultiples);
+    						} else {
+    							// Mode comparaison simple (SNR et nbEch)
+    							AnalyseTEB.analyserComparaison(simulateur.nbBitsMess, simulateur.nEch, snr, simulateur.seed);
+    						}
+    					} catch (Exception e) {
+    						System.err.println("Erreur lors de l'analyse de comparaison: " + e.getMessage());
+    						e.printStackTrace();
     					}
-    				} catch (Exception e) {
-    					System.err.println("Erreur lors de l'analyse de comparaison: " + e.getMessage());
-    					e.printStackTrace();
+    				} else {
+    					// Mode normal
+    					AnalyseTEB.genererGraphiques(simulateur.nbBitsMess, simulateur.nEch,
+    					                             snr, simulateur.form, simulateur.seed, simulateur.trajetsMultiples, simulateur.codeur);
     				}
+
     			} else {
-    				// Mode normal
-    				AnalyseTEB.genererGraphiques(simulateur.nbBitsMess, simulateur.nEch,
-    				                             snr, simulateur.form, simulateur.seed, simulateur.trajetsMultiples, simulateur.codeur);
+    				// Pas de bruit ni de multi-trajets : ne rien faire
+    				System.out.println("\nAucune analyse TEB à générer (pas de -snrpb ni de -ti)");
     			}
 
-    			// Appeler le script Python pour générer les graphiques améliorés
+    			// Appeler le script Python pour afficher les sondes (et les TEB si disponibles)
     			appelScriptPython(simulateur.modeComparaison);
     		}
     	}

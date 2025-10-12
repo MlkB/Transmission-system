@@ -38,12 +38,12 @@ public class SondeAnalogique extends Sonde <Float> {
             table[i] = f;
             i++;
         }
-        // Créer la fenêtre seulement la première fois
-        if (vueCourbe == null) {
-            vueCourbe = new VueCourbe (table, nom);
-        }
+        // Ne plus créer de fenêtre Java, tout est affiché en Python maintenant
+        // if (vueCourbe == null) {
+        //     vueCourbe = new VueCourbe (table, nom);
+        // }
 
-        // Exporter les données vers CSV
+        // Exporter les données vers CSV pour affichage Python
         exportToCSV(table);
     }
 

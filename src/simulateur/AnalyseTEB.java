@@ -669,6 +669,11 @@ public class AnalyseTEB {
                 analyserAlpha();
                 Thread.sleep(500);
                 analyserTau();
+                // Analyser le codeur seulement si utilisé
+                if (avecCodeur) {
+                    Thread.sleep(500);
+                    analyserCodeur();
+                }
             } else {
                 // Analyses pour canal simple (avec ou sans bruit)
                 System.out.println("Mode: Canal simple");

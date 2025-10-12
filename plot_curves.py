@@ -38,11 +38,23 @@ def plot_sonde_files():
             # Créer une nouvelle figure pour chaque sonde
             fig, ax = plt.subplots(figsize=(12, 4))
 
-            # Tracer la courbe
-            ax.plot(data['index'], data['valeur'], linewidth=1.5, color='blue')
-            ax.set_xlabel('Index', fontsize=11, fontweight='bold')
-            ax.set_ylabel('Valeur', fontsize=11, fontweight='bold')
-            ax.set_title(f'{sonde_name}', fontsize=13, fontweight='bold')
+            # Déterminer si c'est un signal logique (uniquement des 0 et 1)
+            is_logic = set(data['valeur'].unique()).issubset({0, 1, 0.0, 1.0})
+
+            if is_logic:
+                # Signal logique : utiliser un graphique en escalier
+                ax.step(data['index'], data['valeur'], where='post', linewidth=2, color='darkblue')
+                ax.set_ylabel('Valeur logique', fontsize=11, fontweight='bold')
+                ax.set_ylim(-0.1, 1.1)
+                ax.set_yticks([0, 1])
+                ax.set_yticklabels(['0', '1'])
+            else:
+                # Signal analogique : tracer une courbe continue
+                ax.plot(data['index'], data['valeur'], linewidth=1.0, color='royalblue')
+                ax.set_ylabel('Valeur', fontsize=11, fontweight='bold')
+
+            ax.set_xlabel('Échantillon', fontsize=11, fontweight='bold')
+            ax.set_title(f'Sonde : {sonde_name}', fontsize=13, fontweight='bold')
             ax.grid(True, alpha=0.3, linestyle='--')
 
             # Ajouter les graduations
