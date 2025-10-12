@@ -94,6 +94,12 @@ public class Simulateur {
 	/** booléen disant si on utilise un codeur ou non */
 	private Boolean codeur = false;
 
+	/** amplitude minimale du signal analogique */
+	private float amplMin = 0.0f;
+
+	/** amplitude maximale du signal analogique */
+	private float amplMax = 1.0f;
+
 
 
     private Emetteur emetteur = null;
@@ -162,12 +168,15 @@ public class Simulateur {
         }
 
 		// Toujours créer les maillons de base
-		emetteur = new Emetteur(form, nEch);
+		emetteur = new Emetteur(form, nEch, amplMin, amplMax);
 
-		// Seuil de décision dépend du codage:
-		// - RZ: pulse dans le tiers central, moyenne pour bit=1 est 1/3, seuil = 1/6
-		// - NRZ et NRZT: signaux ±1, seuil = 0.0
-		float seuil = "RZ".equalsIgnoreCase(form) ? (1.0f / 6.0f) : 0.0f;
+		// Seuil de décision dépend de l'amplitude et du codage:
+		// - RZ: bit=1 donne amplMin-amplMax-amplMin (1/3 chacun), moyenne = amplMin + (amplMax-amplMin)/3
+		//       seuil optimal = amplMin + (amplMax-amplMin)/6
+		// - NRZ/NRZT: bit=0→amplMin, bit=1→amplMax, seuil = (amplMin+amplMax)/2
+		float seuil = "RZ".equalsIgnoreCase(form)
+		              ? (amplMin + (amplMax - amplMin) / 6.0f)
+		              : ((amplMin + amplMax) / 2.0f);
 		recepteur = new Recepteur(nEch, seuil, form);
 		destination = new DestinationFinale();
 
@@ -322,6 +331,24 @@ public class Simulateur {
 
 			else if (args[i].matches("-comparaison")) {
 				modeComparaison = true;
+			}
+
+			else if (args[i].matches("-ampl")) {
+				i++;
+				try {
+					amplMin = Float.valueOf(args[i]);
+					i++;
+					if (i >= args.length) {
+						throw new ArgumentsException("Valeur max manquante pour -ampl");
+					}
+					amplMax = Float.valueOf(args[i]);
+					if (amplMin >= amplMax) {
+						throw new ArgumentsException("Pour -ampl : min doit être inférieur à max");
+					}
+				}
+				catch (NumberFormatException e) {
+					throw new ArgumentsException("Valeurs invalides pour -ampl : " + args[i]);
+				}
 			}
 
 

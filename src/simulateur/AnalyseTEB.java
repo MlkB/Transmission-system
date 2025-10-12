@@ -380,6 +380,49 @@ public class AnalyseTEB {
         exportToCSV("Codeur_Avec", "SNR_dB", valeursSNR, valeursTEB_AvecCodeur);
         System.out.println("Graphiques TEB avec/sans codeur générés\n");
     }
+    /**
+     * Analyse 7 : TEB en fonction de l'amplitude du signal
+     * Permet de vérifier si le calcul de variance du bruit s'adapte correctement à l'amplitude
+     * @throws Exception si une erreur survient lors de l'exécution du simulateur
+     */
+    public static void analyserAmplitude() throws Exception {
+        System.out.println("=== Analyse TEB = f(Amplitude) ===");
+
+        int nbPoints = 10;  // Amplitude max de 0.5 à 5.0
+        float[] valeursTEB = new float[nbPoints];
+        float[] valeursAmplMax = new float[nbPoints];
+
+        // Utiliser le nombre de bits du message
+        int nbBitsAnalyse = nbBitsMessage;
+
+        // Faire varier l'amplitude max de 0.5 à 5.0 (amplMin fixé à 0.0)
+        for (int i = 0; i < nbPoints; i++) {
+            float amplMax = 0.5f + i * 0.5f;  // 0.5, 1.0, 1.5, ..., 5.0
+            valeursAmplMax[i] = amplMax;
+
+            StringBuilder args = new StringBuilder();
+            args.append("-mess ").append(nbBitsAnalyse);
+            args.append(" -form ").append(forme);
+            args.append(" -nbEch ").append(nbEch);
+            if (seed != null) {
+                args.append(" -seed ").append(seed);
+            }
+            args.append(" -snrpb ").append(snrDb);
+            args.append(" -ampl 0.0 ").append(amplMax);
+
+            Simulateur sim = new Simulateur(args.toString().split("\\s+"));
+            sim.execute();
+            float teb = sim.calculTauxErreurBinaire();
+
+            valeursTEB[i] = teb;
+            System.out.println(String.format("AmplMax=%.1f => TEB=%.6f", amplMax, teb));
+        }
+
+        VueCourbe courbe7 = new VueCourbe(valeursTEB, "TEB = f(Amplitude Max)");
+        try { Thread.sleep(200); } catch (Exception e) {}
+        exportToCSV("Amplitude", "AmplMax", valeursAmplMax, valeursTEB);
+        System.out.println("Graphique TEB vs Amplitude généré\n");
+    }
 
     /**
      * Analyse de comparaison : TEB en fonction du SNR pour NRZ, NRZT et RZ
@@ -680,6 +723,8 @@ public class AnalyseTEB {
                 analyserSNR();
                 Thread.sleep(500);
                 analyserNbEch();
+                Thread.sleep(500);
+                analyserAmplitude();
                 // Analyser le codeur seulement si utilisé
                 if (avecCodeur) {
                     Thread.sleep(500);

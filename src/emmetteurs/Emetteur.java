@@ -29,16 +29,28 @@ public class Emetteur<T> extends Source<Float> implements DestinationInterface <
      * nombre d'échantillon utilisé par l'émetteur pour le codage
      */
     private int nbEch;
+    /**
+     * amplitude minimale du signal analogique
+     */
+    private float amplMin;
+    /**
+     * amplitude maximale du signal analogique
+     */
+    private float amplMax;
 
     /**
      * constrycteur de la casse emetteur
      * @param typeCodage donne le codage utilisé par l'émetteur
      * @param nbEch donne le nombre d'échantillons utilisés par l'émetteur
+     * @param amplMin amplitude minimale du signal
+     * @param amplMax amplitude maximale du signal
      */
-    public Emetteur(String typeCodage, int nbEch) {
+    public Emetteur(String typeCodage, int nbEch, float amplMin, float amplMax) {
         super();
         this.typeCodage = (typeCodage == null) ? "RZ" : typeCodage;
-        this.nbEch=nbEch;
+        this.nbEch = nbEch;
+        this.amplMin = amplMin;
+        this.amplMax = amplMax;
     }
 
     //Iterator<DestinationInterface<E>> it = destinationsConnectees.iterator();
@@ -58,7 +70,7 @@ public class Emetteur<T> extends Source<Float> implements DestinationInterface <
             if ("NRZ".equalsIgnoreCase(typeCodage)) {
                  for (Boolean bit : informationRecue) {
                      for (int i = 0; i < nbEch; i++) {
-                         informationGeneree.add(bit ? 1.0f : -1.0f);
+                         informationGeneree.add(bit ? amplMax : amplMin);
                      }
                 }
 
@@ -67,26 +79,26 @@ public class Emetteur<T> extends Source<Float> implements DestinationInterface <
                 for (Boolean bit : informationRecue) {
                     int third = nbEch / 3;
 
-                    // Premier tiers: toujours 0
+                    // Premier tiers: toujours amplMin
                     for (int i = 0; i < third; i++) {
-                        informationGeneree.add(0.0f);
+                        informationGeneree.add(amplMin);
                     }
 
-                    // Deuxième tiers: 1 si bit=true, 0 si bit=false
+                    // Deuxième tiers: amplMax si bit=true, amplMin si bit=false
                     for (int i = third; i < 2 * third; i++) {
-                        informationGeneree.add(bit ? 1.0f : 0.0f);
+                        informationGeneree.add(bit ? amplMax : amplMin);
                     }
 
-                    // Dernier tiers: toujours 0
+                    // Dernier tiers: toujours amplMin
                     for (int i = 2 * third; i < nbEch; i++) {
-                        informationGeneree.add(0.0f);
+                        informationGeneree.add(amplMin);
                     }
                 }
             } else if ("NRZT".equalsIgnoreCase(typeCodage)) {
-                float prevLevel = 0.0f; // Niveau précédent (commence à 0)
+                float prevLevel = amplMin; // Niveau précédent (commence à amplMin)
 
                 for (int b = 0; b < informationRecue.nbElements(); b++) {
-                    float level = informationRecue.iemeElement(b) ? 1.0f : -1.0f;
+                    float level = informationRecue.iemeElement(b) ? amplMax : amplMin;
                     int third = nbEch / 3;
 
                     for (int i = 0; i < nbEch; i++) {

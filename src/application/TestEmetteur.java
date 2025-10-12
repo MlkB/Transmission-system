@@ -44,10 +44,10 @@ public class TestEmetteur {
         Information<Boolean> infoBits = new Information<>(bits);
 
         // 2) Chaîne : Emetteur(Boolean->Float) -> Lien parfait -> Recepteur(Float->Boolean) -> Destination
-        Emetteur<Boolean> emetteur = new Emetteur<>("NRZ", 1);
+        Emetteur<Boolean> emetteur = new Emetteur<>("NRZ", 1, -1.0f, 1.0f);  // NRZ avec amplitude -1 à +1
         TransmetteurParfait<Float> lien = new TransmetteurParfait<>();
 
-        Recepteur recepteur = new Recepteur(1, 0f,"RZ");       // 1 échantillon/bit, seuil 0f
+        Recepteur recepteur = new Recepteur(1, 0f, "NRZ");    // 1 échantillon/bit, seuil 0f, codage NRZ
         DestinationFinale<Boolean> dest = new DestinationFinale<>();
 
         // Connexions
