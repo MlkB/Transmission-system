@@ -408,14 +408,13 @@ public class Simulateur {
 
 
 	/**
-	 * Supprime les anciens fichiers CSV pour éviter d'afficher des données obsolètes
+	 * Supprime tous les anciens fichiers CSV (sondes et TEB) pour éviter d'afficher des données obsolètes
 	 */
-	private static void nettoyerAnciensCSV() {
+	private static void nettoyerTousLesCSV() {
 		try {
 			java.io.File currentDir = new java.io.File(".");
 			java.io.File[] csvFiles = currentDir.listFiles((dir, name) ->
-				name.startsWith("sonde_") && name.endsWith(".csv") ||
-				name.startsWith("TEB_") && name.endsWith(".csv")
+				(name.startsWith("sonde_") || name.startsWith("TEB_")) && name.endsWith(".csv")
 			);
 
 			if (csvFiles != null) {
@@ -488,9 +487,14 @@ public class Simulateur {
     		simulateur = new Simulateur(args);
     	}
     	catch (Exception e) {
-    		System.out.println(e); 
+    		System.out.println(e);
     		System.exit(-1);
-    	} 
+    	}
+
+    	// Nettoyer les anciens fichiers CSV si affichage activé
+    	if (simulateur.isAffichageActive()) {
+    		nettoyerTousLesCSV();
+    	}
 
     	try {
     		simulateur.execute();
@@ -507,9 +511,6 @@ public class Simulateur {
     			                                   (simulateur.trajetsMultiples != null && !simulateur.trajetsMultiples.isEmpty());
 
     			if (avecBruitOuMultiTrajets) {
-    				// Nettoyer les anciens fichiers CSV avant de générer les nouveaux
-    				nettoyerAnciensCSV();
-
     				// Utiliser SNR = 10dB par défaut si pas de bruit dans la simulation
     				float snr = (simulateur.SNRpB != null) ? simulateur.SNRpB : 10.0f;
 
