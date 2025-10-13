@@ -383,9 +383,10 @@ public class AnalyseTEB {
     /**
      * Analyse 7 : TEB en fonction de l'amplitude du signal
      * Permet de vérifier si le calcul de variance du bruit s'adapte correctement à l'amplitude
+     * @param avecCodeur true si le codeur doit être utilisé
      * @throws Exception si une erreur survient lors de l'exécution du simulateur
      */
-    public static void analyserAmplitude() throws Exception {
+    public static void analyserAmplitude(boolean avecCodeur) throws Exception {
         System.out.println("=== Analyse TEB = f(Amplitude) ===");
 
         int nbPoints = 10;  // Amplitude max de 0.5 à 5.0
@@ -409,6 +410,9 @@ public class AnalyseTEB {
             }
             args.append(" -snrpb ").append(snrDb);
             args.append(" -ampl 0.0 ").append(amplMax);
+            if (avecCodeur) {
+                args.append(" -codeur");
+            }
 
             Simulateur sim = new Simulateur(args.toString().split("\\s+"));
             sim.execute();
@@ -724,7 +728,7 @@ public class AnalyseTEB {
                 Thread.sleep(500);
                 analyserNbEch();
                 Thread.sleep(500);
-                analyserAmplitude();
+                analyserAmplitude(avecCodeur);
                 // Analyser le codeur seulement si utilisé
                 if (avecCodeur) {
                     Thread.sleep(500);

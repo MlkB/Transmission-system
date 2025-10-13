@@ -100,6 +100,9 @@ public class Simulateur {
 	/** amplitude maximale du signal analogique */
 	private float amplMax = 1.0f;
 
+	/** indique si l'amplitude a été spécifiée par l'utilisateur */
+	private boolean amplitudeSpecifiee = false;
+
 
 
     private Emetteur emetteur = null;
@@ -166,6 +169,17 @@ public class Simulateur {
                 transmetteurLogique = new TransmetteurImparfait<>(nEch, SNRpB);
             }
         }
+
+		// Ajuster les amplitudes par défaut selon la forme de codage si non spécifiées
+		if (!amplitudeSpecifiee) {
+			if ("NRZ".equalsIgnoreCase(form) || "NRZT".equalsIgnoreCase(form)) {
+				amplMin = -1.0f;
+				amplMax = 1.0f;
+			} else if ("RZ".equalsIgnoreCase(form)) {
+				amplMin = 0.0f;
+				amplMax = 1.0f;
+			}
+		}
 
 		// Toujours créer les maillons de base
 		emetteur = new Emetteur(form, nEch, amplMin, amplMax);
@@ -345,6 +359,7 @@ public class Simulateur {
 					if (amplMin >= amplMax) {
 						throw new ArgumentsException("Pour -ampl : min doit être inférieur à max");
 					}
+					amplitudeSpecifiee = true;
 				}
 				catch (NumberFormatException e) {
 					throw new ArgumentsException("Valeurs invalides pour -ampl : " + args[i]);

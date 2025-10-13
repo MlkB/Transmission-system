@@ -124,7 +124,7 @@ public class TransmetteurImparfait<E> extends Transmetteur {
         calculPuissanceSignal();
         // Variance par échantillon pour obtenir SNR_b après moyennage de nEch échantillons
         float snrLineaire = (float) Math.pow(10, SNRdB / 10.0);
-        this.variance = (puissanceSignal * nEch) / snrLineaire;
+        this.variance = (puissanceSignal * nEch) / (2.0f * snrLineaire);
     }
 
     /**
